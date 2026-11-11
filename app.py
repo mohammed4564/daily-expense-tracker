@@ -36,10 +36,7 @@ def add_expense_page():
 
 @app.route("/")
 def home():
-    return jsonify({
-        "success": True,
-        "message": "Daily Expense Tracker API is running"
-    })
+     return render_template("home.html")
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 

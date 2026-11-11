@@ -5,343 +5,635 @@
 
 {% block content %}
 
+<style>
+/* =========================================
+   REPORT PAGE - RESPONSIVE CSS
+========================================= */
+
+.reports-page {
+    width: 100%;
+    max-width: 1400px;
+    margin: auto;
+    padding: 22px;
+    box-sizing: border-box;
+    color: #1f2937;
+}
+
+.reports-page * {
+    box-sizing: border-box;
+}
+
+.reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.reports-header h2 {
+    margin: 0 0 7px;
+    font-size: 27px;
+    color: #111827;
+}
+
+.reports-header p,
+.report-muted {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 5px 0 0;
+}
+
+.report-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.reports-page button {
+    cursor: pointer;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.reports-page .btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.reports-page .btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.reports-page .btn-edit {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.reports-page .btn-edit:hover {
+    background: #d1d5db;
+}
+
+.report-panel,
+.report-stat {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 11px;
+    padding: 20px;
+    margin-bottom: 18px;
+    min-width: 0;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.035);
+}
+
+.report-panel h3 {
+    margin: 0 0 14px;
+    font-size: 17px;
+    color: #111827;
+}
+
+.period-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 15px;
+}
+
+.period-btn {
+    background: #f9fafb;
+    color: #374151;
+    border: 1px solid #d1d5db !important;
+}
+
+.period-btn:hover,
+.period-btn.active {
+    background: #2563eb;
+    border-color: #2563eb !important;
+    color: white;
+}
+
+.custom-dates {
+    display: none;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.custom-dates.show {
+    display: flex;
+}
+
+.custom-dates div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.custom-dates label,
+.budget-controls label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.custom-dates input,
+.budget-controls input {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 14px;
+    min-width: 160px;
+    max-width: 100%;
+}
+
+#periodLabel {
+    margin-top: 14px;
+}
+
+#reportMessage {
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+#reportMessage.error {
+    color: #dc2626;
+}
+
+#reportMessage.success {
+    color: #059669;
+}
+
+/* SUMMARY */
+
+.report-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.report-stat {
+    margin-bottom: 0;
+}
+
+.report-stat span {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.report-stat h2 {
+    font-size: 24px;
+    color: #111827;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.report-stat small {
+    display: block;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 8px;
+}
+
+/* BUDGET */
+
+.budget-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.budget-result {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.budget-result div {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 8px;
+    min-width: 0;
+}
+
+.budget-result span {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.budget-result h3 {
+    margin: 8px 0 0;
+    font-size: 20px;
+    overflow-wrap: anywhere;
+}
+
+.budget-progress {
+    height: 13px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+#budgetProgressBar {
+    width: 0;
+    height: 100%;
+    background: #2563eb;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+/* CHARTS */
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.report-grid .report-panel {
+    margin-bottom: 0;
+}
+
+.report-chart {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin-top: 15px;
+}
+
+/* TABLE */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 12px;
+}
+
+.reports-page table {
+    width: 100%;
+    min-width: 550px;
+    border-collapse: collapse;
+}
+
+.reports-page th,
+.reports-page td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+}
+
+.reports-page th {
+    background: #f9fafb;
+    color: #374151;
+    font-weight: 700;
+}
+
+.reports-page td {
+    color: #4b5563;
+}
+
+.reports-page tbody tr:hover {
+    background: #f9fafb;
+}
+
+/* INSIGHTS */
+
+#spendingInsights {
+    padding-left: 22px;
+    margin: 12px 0 0;
+}
+
+#spendingInsights li {
+    padding: 7px 0;
+    color: #4b5563;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* TABLET */
+
+@media (max-width: 900px) {
+    .report-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .report-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+    .reports-page {
+        padding: 12px;
+    }
+
+    .reports-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .reports-header h2 {
+        font-size: 22px;
+    }
+
+    .report-actions {
+        width: 100%;
+    }
+
+    .report-actions button {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .report-panel,
+    .report-stat {
+        padding: 15px;
+    }
+
+    .period-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .period-btn {
+        width: 100%;
+        padding: 10px 5px;
+    }
+
+    .custom-dates {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .custom-dates div,
+    .custom-dates input,
+    .custom-dates button {
+        width: 100%;
+    }
+
+    .report-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .report-stat h2 {
+        font-size: 19px;
+    }
+
+    .budget-result {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .budget-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .budget-controls input,
+    .budget-controls button {
+        width: 100%;
+    }
+
+    .report-chart {
+        height: 260px;
+    }
+
+    .reports-page table {
+        min-width: 550px;
+    }
+}
+
+@media (max-width: 360px) {
+    .report-summary {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+
 <div class="reports-page">
 
-    <!-- REPORT HEADER -->
+    <!-- HEADER -->
     <div class="reports-header">
-
         <div>
             <h2>Reports & Analytics</h2>
             <p>Understand your spending patterns and track your expenses.</p>
         </div>
 
         <div class="report-actions">
-
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="downloadPDFReport()">
+            <button type="button"
+                    class="btn-primary"
+                    onclick="downloadPDFReport()">
                 Download PDF Report
             </button>
 
-            <button
-                type="button"
-                class="btn-edit"
-                onclick="window.location.href='/dashboard'">
+            <button type="button"
+                    class="btn-edit"
+                    onclick="window.location.href='/dashboard'">
                 Back to Dashboard
             </button>
-
         </div>
-
     </div>
 
 
-    <!-- REPORTING PERIOD -->
+    <!-- PERIOD FILTER -->
     <section class="report-panel">
-
         <h3>Select Reporting Period</h3>
 
         <div class="period-buttons">
-
-            <button
-                type="button"
-                class="period-btn active"
-                data-period="week"
-                onclick="selectPeriod('week', this)">
+            <button type="button"
+                    class="period-btn active"
+                    data-period="week"
+                    onclick="selectPeriod('week', this)">
                 This Week
             </button>
 
-            <button
-                type="button"
-                class="period-btn"
-                data-period="month"
-                onclick="selectPeriod('month', this)">
+            <button type="button"
+                    class="period-btn"
+                    data-period="month"
+                    onclick="selectPeriod('month', this)">
                 This Month
             </button>
 
-            <button
-                type="button"
-                class="period-btn"
-                data-period="year"
-                onclick="selectPeriod('year', this)">
+            <button type="button"
+                    class="period-btn"
+                    data-period="year"
+                    onclick="selectPeriod('year', this)">
                 This Year
             </button>
 
-            <button
-                type="button"
-                class="period-btn"
-                data-period="custom"
-                onclick="selectPeriod('custom', this)">
+            <button type="button"
+                    class="period-btn"
+                    data-period="custom"
+                    onclick="selectPeriod('custom', this)">
                 Custom Range
             </button>
-
         </div>
 
-
-        <!-- CUSTOM DATE RANGE -->
-        <div
-            id="customDates"
-            class="custom-dates"
-            style="display:none;">
-
+        <div id="customDates" class="custom-dates">
             <div>
-
                 <label for="fromDate">From Date</label>
-
-                <input
-                    type="date"
-                    id="fromDate">
-
+                <input type="date" id="fromDate">
             </div>
 
             <div>
-
                 <label for="toDate">To Date</label>
-
-                <input
-                    type="date"
-                    id="toDate">
-
+                <input type="date" id="toDate">
             </div>
 
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="applyCustomRange()">
+            <button type="button"
+                    class="btn-primary"
+                    onclick="applyCustomRange()">
                 Apply
             </button>
-
         </div>
 
-
         <p id="periodLabel" class="report-muted"></p>
-
         <p id="reportMessage" role="status"></p>
-
     </section>
 
 
-    <!-- SUMMARY CARDS -->
+    <!-- SUMMARY -->
     <section class="report-summary">
-
         <div class="report-stat">
-
             <span>Total Spending</span>
-
             <h2 id="totalSpending">₹0.00</h2>
-
-            <small id="periodComparison">
-                Compared with previous period
-            </small>
-
+            <small id="periodComparison">Compared with previous period</small>
         </div>
 
-
         <div class="report-stat">
-
             <span>Transactions</span>
-
             <h2 id="transactionCount">0</h2>
-
             <small>Number of expenses</small>
-
         </div>
 
-
         <div class="report-stat">
-
             <span>Average Expense</span>
-
             <h2 id="averageExpense">₹0.00</h2>
-
             <small>Per transaction</small>
-
         </div>
-
 
         <div class="report-stat">
-
             <span>Highest Expense</span>
-
             <h2 id="highestExpense">₹0.00</h2>
-
             <small id="highestExpenseDate">No records</small>
-
         </div>
-
     </section>
 
 
     <!-- MONTHLY BUDGET -->
     <section class="report-panel">
-
         <h3>Monthly Budget Indicator</h3>
-
         <p class="report-muted">
-            Enter a monthly budget to see how much of it you have used.
+            Enter your monthly budget to track your spending.
         </p>
 
-
         <div class="budget-controls">
+            <input type="number"
+                   id="monthlyBudget"
+                   min="1"
+                   step="0.01"
+                   placeholder="Enter monthly budget">
 
-            <input
-                type="number"
-                id="monthlyBudget"
-                min="1"
-                step="0.01"
-                placeholder="Enter monthly budget">
-
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="saveBudget()">
+            <button type="button"
+                    class="btn-primary"
+                    onclick="saveBudget()">
                 Save Budget
             </button>
-
         </div>
-
 
         <div class="budget-result">
-
             <div>
-
                 <span>Current Month Spending</span>
-
                 <h3 id="currentMonthSpending">₹0.00</h3>
-
             </div>
 
-
             <div>
-
                 <span>Budget Used</span>
-
                 <h3 id="budgetPercentage">Not set</h3>
-
             </div>
-
 
             <div>
-
                 <span>Budget Grade</span>
-
                 <h3 id="budgetGrade">-</h3>
-
             </div>
-
         </div>
-
 
         <div class="budget-progress">
-
             <div id="budgetProgressBar"></div>
-
         </div>
 
-
         <p id="budgetMessage" class="report-muted"></p>
-
     </section>
 
 
     <!-- CHARTS -->
     <section class="report-grid">
-
-
-        <!-- CATEGORY CHART -->
         <div class="report-panel">
-
             <h3>Category-wise Spending</h3>
-
-            <p class="report-muted">
-                Where your money is going
-            </p>
-
+            <p class="report-muted">Where your money is going</p>
             <div class="report-chart">
-
                 <canvas id="categoryChart"></canvas>
-
             </div>
-
         </div>
 
-
-        <!-- TREND CHART -->
         <div class="report-panel">
-
             <h3>Spending Trend</h3>
-
-            <p class="report-muted">
-                How your spending changes over time
-            </p>
-
+            <p class="report-muted">How your spending changes over time</p>
             <div class="report-chart">
-
                 <canvas id="trendChart"></canvas>
-
             </div>
-
         </div>
-
     </section>
 
 
     <!-- TOP CATEGORIES -->
     <section class="report-panel">
-
         <h3>Top Spending Categories</h3>
 
         <div class="table-responsive">
-
             <table>
-
                 <thead>
-
                     <tr>
-
                         <th>Category</th>
-
                         <th>Total Spent</th>
-
                         <th>Transactions</th>
-
                         <th>Share of Spending</th>
-
                     </tr>
-
                 </thead>
 
-
                 <tbody id="topCategories">
-
                     <tr>
-
-                        <td colspan="4">
-                            Loading report...
-                        </td>
-
+                        <td colspan="4">Loading report...</td>
                     </tr>
-
                 </tbody>
-
             </table>
-
         </div>
-
     </section>
 
 
-    <!-- SPENDING INSIGHTS -->
+    <!-- INSIGHTS -->
     <section class="report-panel">
-
         <h3>Spending Insights</h3>
-
         <ul id="spendingInsights">
-
             <li>Loading insights...</li>
-
         </ul>
-
     </section>
 
 </div>
@@ -351,2552 +643,1171 @@
 
 {% block scripts %}
 
-<!-- =========================================
-     EXTERNAL LIBRARIES
-========================================= -->
-
+<!-- External libraries -->
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
 <script>
+"use strict";
 
-// ==========================================
-// 1. AUTHENTICATION
-// ==========================================
+/* =========================================
+   1. AUTHENTICATION
+========================================= */
 
 const token = localStorage.getItem("access_token");
 
-if (!token) {
-
-    window.location.href = "/login";
-
-}
-
-
-// ==========================================
-// 2. GLOBAL VARIABLES
-// ==========================================
-
 let allExpenses = [];
-
 let selectedPeriod = "week";
-
 let startDate = null;
-
 let endDate = null;
-
 let categoryChart = null;
-
 let trendChart = null;
 
 
-// ==========================================
-// 3. CURRENCY FORMAT
-// ==========================================
+/* =========================================
+   2. DOM HELPERS
+========================================= */
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
+
+function getValue(id, fallback = "") {
+    const element = document.getElementById(id);
+    return element ? element.value : fallback;
+}
 
 function money(amount) {
-
     const value = Number(amount || 0);
 
     return value.toLocaleString("en-IN", {
-
         style: "currency",
-
         currency: "INR",
-
         minimumFractionDigits: 2,
-
         maximumFractionDigits: 2
-
     });
-
 }
-
 
 function pdfMoney(amount) {
-
-    const value = Number(amount);
-
-    if (!Number.isFinite(value)) {
-
-        return "INR 0.00";
-
-    }
+    const value = Number(amount || 0);
 
     return "INR " + value.toLocaleString("en-IN", {
-
         minimumFractionDigits: 2,
-
         maximumFractionDigits: 2
-
     });
-
 }
 
 
-// ==========================================
-// 4. DATE HELPERS
-// ==========================================
+/* =========================================
+   3. DATE HELPERS
+========================================= */
 
 function dateString(date) {
-
     const year = date.getFullYear();
-
     const month = String(date.getMonth() + 1).padStart(2, "0");
-
     const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
-
 }
 
-
 function parseDate(value) {
-
-    const parts = String(value || "")
-        .slice(0, 10)
-        .split("-")
-        .map(Number);
+    const datePart = String(value || "").slice(0, 10);
+    const parts = datePart.split("-").map(Number);
 
     if (
         parts.length !== 3 ||
         parts.some(part => !Number.isFinite(part))
     ) {
-
-        return new Date("Invalid");
-
+        return new Date(NaN);
     }
 
-    return new Date(
-        parts[0],
-        parts[1] - 1,
-        parts[2]
-    );
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
 
+    if (
+        date.getFullYear() !== parts[0] ||
+        date.getMonth() !== parts[1] - 1 ||
+        date.getDate() !== parts[2]
+    ) {
+        return new Date(NaN);
+    }
+
+    return date;
 }
-
 
 function addDays(date, days) {
-
     const result = new Date(date);
-
     result.setDate(result.getDate() + days);
-
     return result;
-
 }
 
 
-// ==========================================
-// 5. GET REPORTING PERIOD
-// ==========================================
+/* =========================================
+   4. REPORTING PERIOD
+========================================= */
 
 function getPeriodRange(period) {
-
     const today = new Date();
-
     today.setHours(0, 0, 0, 0);
 
     let start;
-
     let end;
 
-
     if (period === "week") {
-
-        // Monday to Sunday
-
         const day = today.getDay();
+        const offset = day === 0 ? -6 : 1 - day;
 
-        const mondayOffset = day === 0
-            ? -6
-            : 1 - day;
-
-        start = addDays(today, mondayOffset);
-
+        start = addDays(today, offset);
         end = addDays(start, 6);
-
+    } else if (period === "month") {
+        start = new Date(today.getFullYear(), today.getMonth(), 1);
+        end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    } else {
+        start = new Date(today.getFullYear(), 0, 1);
+        end = new Date(today.getFullYear(), 11, 31);
     }
 
-
-    else if (period === "month") {
-
-        start = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            1
-        );
-
-        end = new Date(
-            today.getFullYear(),
-            today.getMonth() + 1,
-            0
-        );
-
-    }
-
-
-    else if (period === "year") {
-
-        start = new Date(
-            today.getFullYear(),
-            0,
-            1
-        );
-
-        end = new Date(
-            today.getFullYear(),
-            11,
-            31
-        );
-
-    }
-
-
-    return {
-        start,
-        end
-    };
-
+    return { start, end };
 }
 
 
-// ==========================================
-// 6. SELECT REPORTING PERIOD
-// ==========================================
+/* =========================================
+   5. SELECT PERIOD
+========================================= */
 
 function selectPeriod(period, button) {
-
     selectedPeriod = period;
 
-
     document.querySelectorAll(".period-btn").forEach(btn => {
-
         btn.classList.remove("active");
-
     });
 
-
-    button.classList.add("active");
-
+    if (button) button.classList.add("active");
 
     const customDates = document.getElementById("customDates");
 
     if (customDates) {
-
-        customDates.style.display =
-            period === "custom" ? "flex" : "none";
-
+        customDates.classList.toggle("show", period === "custom");
     }
 
-
     if (period !== "custom") {
-
         const range = getPeriodRange(period);
 
         startDate = range.start;
-
         endDate = range.end;
 
         showMessage("");
-
         renderReport();
-
     }
-
 }
 
 
-// ==========================================
-// 7. APPLY CUSTOM DATE RANGE
-// ==========================================
+/* =========================================
+   6. CUSTOM DATE RANGE
+========================================= */
 
 function applyCustomRange() {
-
-    const fromElement = document.getElementById("fromDate");
-
-    const toElement = document.getElementById("toDate");
-
-
-    if (!fromElement || !toElement) {
-
-        showMessage("Date input fields were not found.", true);
-
-        return;
-
-    }
-
-
-    const from = fromElement.value;
-
-    const to = toElement.value;
-
+    const from = getValue("fromDate");
+    const to = getValue("toDate");
 
     if (!from || !to) {
-
         showMessage("Please select both dates.", true);
-
         return;
-
     }
-
 
     if (from > to) {
-
-        showMessage(
-            "From Date cannot be after To Date.",
-            true
-        );
-
+        showMessage("From Date cannot be after To Date.", true);
         return;
-
     }
 
-
     startDate = parseDate(from);
-
     endDate = parseDate(to);
-
 
     if (
         Number.isNaN(startDate.getTime()) ||
         Number.isNaN(endDate.getTime())
     ) {
-
-        showMessage("Invalid date range.", true);
-
+        showMessage("Please select valid dates.", true);
         return;
-
     }
-
 
     selectedPeriod = "custom";
 
-
     document.querySelectorAll(".period-btn").forEach(btn => {
-
         btn.classList.toggle(
             "active",
             btn.dataset.period === "custom"
         );
-
     });
 
-
     showMessage("");
-
     renderReport();
-
 }
 
 
-// ==========================================
-// 8. SHOW MESSAGE
-// ==========================================
+/* =========================================
+   7. MESSAGES
+========================================= */
 
 function showMessage(message, isError = false) {
-
     const element = document.getElementById("reportMessage");
 
     if (!element) return;
 
     element.textContent = message;
-
-    element.className = isError
-        ? "message error"
-        : "message success";
-
+    element.className = isError ? "error" : "success";
 }
 
 
-// ==========================================
-// 9. GET EXPENSES IN DATE RANGE
-// ==========================================
+/* =========================================
+   8. EXPENSE FILTERING
+========================================= */
 
 function getExpensesInRange(start, end) {
-
     if (!start || !end) return [];
 
     const from = dateString(start);
-
     const to = dateString(end);
 
-
     return allExpenses.filter(expense => {
-
-        const date = String(
-            expense.expense_date || ""
-        ).slice(0, 10);
+        const date = String(expense.expense_date || "").slice(0, 10);
 
         return date >= from && date <= to;
-
     });
-
 }
-
-
-// ==========================================
-// 10. GET TOTAL EXPENSE
-// ==========================================
 
 function getTotal(items) {
-
     return items.reduce((sum, expense) => {
-
         return sum + Number(expense.amount || 0);
-
     }, 0);
-
 }
 
 
-// ==========================================
-// 11. PREVIOUS PERIOD EXPENSES
-// ==========================================
+/* =========================================
+   9. PREVIOUS PERIOD
+========================================= */
 
 function getPreviousRangeExpenses() {
-
     if (!startDate || !endDate) return [];
 
-    const duration = Math.round(
-
-        (endDate - startDate) / 86400000
-
-    ) + 1;
-
+    const duration =
+        Math.round((endDate - startDate) / 86400000) + 1;
 
     const previousEnd = addDays(startDate, -1);
+    const previousStart = addDays(previousEnd, -(duration - 1));
 
-    const previousStart = addDays(
-        previousEnd,
-        -(duration - 1)
-    );
-
-
-    return getExpensesInRange(
-        previousStart,
-        previousEnd
-    );
-
+    return getExpensesInRange(previousStart, previousEnd);
 }
 
 
-// ==========================================
-// 12. RENDER REPORT
-// ==========================================
+/* =========================================
+   10. RENDER REPORT
+========================================= */
 
 function renderReport() {
-
     if (!startDate || !endDate) return;
 
-
-    const items = getExpensesInRange(
-        startDate,
-        endDate
-    );
-
+    const items = getExpensesInRange(startDate, endDate);
 
     const total = getTotal(items);
+    const previousTotal = getTotal(getPreviousRangeExpenses());
 
-    const previousTotal = getTotal(
-        getPreviousRangeExpenses()
+    setText(
+        "periodLabel",
+        `Report: ${dateString(startDate)} to ${dateString(endDate)}`
     );
 
+    setText("totalSpending", money(total));
+    setText("transactionCount", String(items.length));
 
-    // Period label
-
-    document.getElementById("periodLabel").textContent =
-
-        `Report: ${dateString(startDate)} to ${dateString(endDate)}`;
-
-
-    // Total spending
-
-    document.getElementById("totalSpending").textContent =
-        money(total);
-
-
-    // Transaction count
-
-    document.getElementById("transactionCount").textContent =
-        items.length;
-
-
-    // Average expense
-
-    document.getElementById("averageExpense").textContent =
-
-        money(
-            items.length > 0
-                ? total / items.length
-                : 0
-        );
-
-
-    // Highest expense
+    setText(
+        "averageExpense",
+        money(items.length ? total / items.length : 0)
+    );
 
     const highest = items.reduce((max, item) => {
+        if (!max || Number(item.amount || 0) > Number(max.amount || 0)) {
+            return item;
+        }
 
-        return Number(item.amount || 0) >
-            Number(max?.amount || 0)
-            ? item
-            : max;
-
+        return max;
     }, null);
 
+    setText("highestExpense", money(highest ? highest.amount : 0));
 
-    document.getElementById("highestExpense").textContent =
-
-        money(highest?.amount || 0);
-
-
-    document.getElementById("highestExpenseDate").textContent =
-
+    setText(
+        "highestExpenseDate",
         highest
             ? String(highest.expense_date || "").slice(0, 10)
-            : "No records";
+            : "No records"
+    );
 
-
-    // Previous period comparison
-
-    let comparison;
-
+    let comparison = "No expenses in either period";
 
     if (previousTotal > 0) {
-
-        const change =
-
-            ((total - previousTotal) / previousTotal) * 100;
-
+        const change = ((total - previousTotal) / previousTotal) * 100;
 
         comparison =
-
-            `${Math.abs(change).toFixed(1)}% ${
-                change > 0
-                    ? "higher"
-                    : change < 0
-                        ? "lower"
-                        : "unchanged"
-            } than previous period`;
-
-    }
-
-
-    else if (total > 0) {
-
+            `${Math.abs(change).toFixed(1)}% ` +
+            (change > 0
+                ? "higher than previous period"
+                : change < 0
+                    ? "lower than previous period"
+                    : "unchanged from previous period");
+    } else if (total > 0) {
         comparison = "No expenses in previous period";
-
     }
 
-
-    else {
-
-        comparison = "No expenses in either period";
-
-    }
-
-
-    document.getElementById("periodComparison").textContent =
-        comparison;
-
-
-    // Update reports
+    setText("periodComparison", comparison);
 
     updateCategoryChart(items);
-
     updateTrendChart(items);
-
     updateTopCategories(items);
-
     updateInsights(items, total, previousTotal);
-
     updateBudget();
-
 }
 
 
-// ==========================================
-// 13. CATEGORY DOUGHNUT CHART
-// ==========================================
+/* =========================================
+   11. CATEGORY CHART
+========================================= */
 
 function updateCategoryChart(items) {
-
     const canvas = document.getElementById("categoryChart");
 
-    if (!canvas) {
-
-        console.error("categoryChart canvas not found.");
-
+    if (!canvas || typeof window.Chart === "undefined") {
+        console.warn("Category chart or Chart.js is unavailable.");
         return;
-
     }
-
-
-    if (typeof window.Chart === "undefined") {
-
-        console.error("Chart.js library is not loaded.");
-
-        return;
-
-    }
-
-
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
 
     const totals = {};
 
-
     items.forEach(item => {
-
         const category = item.category || "Other";
 
         totals[category] =
-
-            (totals[category] || 0) +
-            Number(item.amount || 0);
-
+            (totals[category] || 0) + Number(item.amount || 0);
     });
-
 
     if (categoryChart) {
-
         categoryChart.destroy();
-
+        categoryChart = null;
     }
 
-
-    categoryChart = new Chart(ctx, {
-
+    categoryChart = new Chart(canvas, {
         type: "doughnut",
-
         data: {
-
-            labels: Object.keys(totals),
-
+            labels: Object.keys(totals).length
+                ? Object.keys(totals)
+                : ["No expenses"],
             datasets: [{
-
-                label: "Category Spending",
-
-                data: Object.values(totals)
-
+                data: Object.keys(totals).length
+                    ? Object.values(totals)
+                    : [1],
+                backgroundColor: [
+                    "#2563eb",
+                    "#16a34a",
+                    "#f59e0b",
+                    "#9333ea",
+                    "#dc2626",
+                    "#0891b2",
+                    "#64748b",
+                    "#db2777"
+                ]
             }]
-
         },
-
         options: {
-
             responsive: true,
-
             maintainAspectRatio: false,
-
             plugins: {
-
+                legend: {
+                    position: "bottom"
+                },
                 tooltip: {
-
                     callbacks: {
-
                         label: context => {
+                            if (!items.length) return "No expenses";
 
                             return `${context.label}: ${money(context.raw)}`;
-
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     });
-
 }
 
 
-// ==========================================
-// 14. SPENDING TREND CHART
-// ==========================================
+/* =========================================
+   12. TREND CHART
+========================================= */
 
 function updateTrendChart(items) {
-
     const canvas = document.getElementById("trendChart");
 
-    if (!canvas) {
-
-        console.error("trendChart canvas not found.");
-
+    if (!canvas || typeof window.Chart === "undefined") {
+        console.warn("Trend chart or Chart.js is unavailable.");
         return;
-
     }
-
-
-    if (typeof window.Chart === "undefined") {
-
-        console.error("Chart.js library is not loaded.");
-
-        return;
-
-    }
-
-
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
 
     const totals = {};
 
-
-    const duration = Math.round(
-
-        (endDate - startDate) / 86400000
-
-    ) + 1;
-
+    const duration =
+        Math.round((endDate - startDate) / 86400000) + 1;
 
     let grouping = "day";
 
-
     if (
-
         selectedPeriod === "year" ||
-
         (selectedPeriod === "custom" && duration > 90)
-
     ) {
-
         grouping = "month";
-
-    }
-
-
-    else if (
-
+    } else if (
         selectedPeriod === "month" ||
-
         (selectedPeriod === "custom" && duration > 31)
-
     ) {
-
         grouping = "week";
-
     }
-
 
     items.forEach(item => {
-
         const date = parseDate(item.expense_date);
 
         if (Number.isNaN(date.getTime())) return;
 
-
         let key;
 
-
         if (grouping === "month") {
-
             key =
-
-                `${date.getFullYear()}-${String(
-                    date.getMonth() + 1
-                ).padStart(2, "0")}`;
-
-        }
-
-
-        else if (grouping === "week") {
-
+                `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        } else if (grouping === "week") {
             const monday = addDays(
-
                 date,
-
-                date.getDay() === 0
-                    ? -6
-                    : 1 - date.getDay()
-
+                date.getDay() === 0 ? -6 : 1 - date.getDay()
             );
 
             key = dateString(monday);
-
-        }
-
-
-        else {
-
+        } else {
             key = dateString(date);
-
         }
 
-
-        totals[key] =
-
-            (totals[key] || 0) +
-            Number(item.amount || 0);
-
+        totals[key] = (totals[key] || 0) + Number(item.amount || 0);
     });
-
 
     const labels = Object.keys(totals).sort();
 
-
     if (trendChart) {
-
         trendChart.destroy();
-
+        trendChart = null;
     }
 
-
-    trendChart = new Chart(ctx, {
-
+    trendChart = new Chart(canvas, {
         type: "bar",
-
         data: {
-
-            labels: labels,
-
+            labels: labels.length ? labels : ["No expenses"],
             datasets: [{
-
-                label:
-
-                    grouping === "day"
-                        ? "Daily Spending"
-                        : grouping === "week"
-                            ? "Weekly Spending"
-                            : "Monthly Spending",
-
-                data: labels.map(label => totals[label])
-
+                label: "Spending",
+                data: labels.length
+                    ? labels.map(label => totals[label])
+                    : [0],
+                backgroundColor: "#2563eb",
+                borderRadius: 5
             }]
-
         },
-
         options: {
-
             responsive: true,
-
             maintainAspectRatio: false,
-
             plugins: {
-
+                legend: {
+                    display: false
+                },
                 tooltip: {
-
                     callbacks: {
-
                         label: context => money(context.raw)
-
                     }
-
                 }
-
             },
-
             scales: {
-
                 y: {
-
                     beginAtZero: true,
-
                     ticks: {
-
                         callback: value => "₹" + value
-
                     }
-
                 }
-
             }
-
         }
-
     });
-
 }
 
 
-// ==========================================
-// 15. TOP SPENDING CATEGORIES
-// ==========================================
+/* =========================================
+   13. TOP CATEGORIES
+========================================= */
 
 function updateTopCategories(items) {
+    const tbody = document.getElementById("topCategories");
+
+    if (!tbody) return;
 
     const totals = {};
 
-
     items.forEach(item => {
-
         const category = item.category || "Other";
 
-
         if (!totals[category]) {
-
             totals[category] = {
-
                 amount: 0,
-
                 count: 0
-
             };
-
         }
 
-
-        totals[category].amount +=
-            Number(item.amount || 0);
-
-
+        totals[category].amount += Number(item.amount || 0);
         totals[category].count++;
-
     });
-
 
     const total = getTotal(items);
 
-
     const sorted = Object.entries(totals).sort(
-
         (a, b) => b[1].amount - a[1].amount
-
     );
 
-
-    const tbody = document.getElementById("topCategories");
-
-    tbody.innerHTML = "";
-
+    tbody.replaceChildren();
 
     if (!sorted.length) {
-
         const row = document.createElement("tr");
-
         const cell = document.createElement("td");
 
         cell.colSpan = 4;
-
         cell.textContent = "No expenses in this period.";
 
         row.appendChild(cell);
-
         tbody.appendChild(row);
 
         return;
-
     }
 
-
     sorted.forEach(([category, data]) => {
-
-        const share = total > 0
-
-            ? (data.amount / total) * 100
-
-            : 0;
-
-
         const row = document.createElement("tr");
 
+        const share = total > 0
+            ? (data.amount / total) * 100
+            : 0;
 
-        const values = [
-
+        [
             category,
-
             money(data.amount),
-
-            data.count,
-
+            String(data.count),
             `${share.toFixed(1)}%`
-
-        ];
-
-
-        values.forEach(value => {
-
+        ].forEach(value => {
             const cell = document.createElement("td");
-
             cell.textContent = value;
-
             row.appendChild(cell);
-
         });
 
-
         tbody.appendChild(row);
-
     });
-
 }
 
 
-// ==========================================
-// 16. SPENDING INSIGHTS
-// ==========================================
+/* =========================================
+   14. SPENDING INSIGHTS
+========================================= */
 
 function updateInsights(items, total, previousTotal) {
-
     const list = document.getElementById("spendingInsights");
 
-    list.innerHTML = "";
+    if (!list) return;
 
+    list.replaceChildren();
 
     function addInsight(message) {
-
         const li = document.createElement("li");
-
         li.textContent = message;
-
         list.appendChild(li);
-
     }
-
 
     if (!items.length) {
-
-        addInsight(
-            "No expenses found for this reporting period."
-        );
-
+        addInsight("No expenses found for this reporting period.");
         return;
-
     }
-
 
     const categories = {};
 
-
     items.forEach(item => {
-
         const category = item.category || "Other";
 
         categories[category] =
-
-            (categories[category] || 0) +
-            Number(item.amount || 0);
-
+            (categories[category] || 0) + Number(item.amount || 0);
     });
 
-
     const topCategory = Object.entries(categories).sort(
-
         (a, b) => b[1] - a[1]
-
     )[0];
 
-
     addInsight(
-
         `Your highest spending category is ${topCategory[0]} (${money(topCategory[1])}).`
-
     );
-
 
     addInsight(
-
         `You recorded ${items.length} transactions with total spending of ${money(total)}.`
-
     );
 
+    addInsight(
+        `Your average transaction amount is ${money(total / items.length)}.`
+    );
 
     if (previousTotal > 0) {
-
         const change =
-
             ((total - previousTotal) / previousTotal) * 100;
 
-
         addInsight(
-
-            `Your spending is ${Math.abs(change).toFixed(1)}% ${
-                change > 0
-                    ? "higher"
-                    : change < 0
-                        ? "lower"
-                        : "unchanged"
-            } compared with the previous period.`
-
+            `Your spending is ${Math.abs(change).toFixed(1)}% ` +
+            (change > 0 ? "higher" : change < 0 ? "lower" : "unchanged") +
+            " compared with the previous period."
         );
-
     }
-
-
-    const average = total / items.length;
-
-
-    addInsight(
-
-        `Your average transaction amount is ${money(average)}.`
-
-    );
-
 }
 
 
-// ==========================================
-// 17. SAVE MONTHLY BUDGET
-// ==========================================
+/* =========================================
+   15. SAVE MONTHLY BUDGET
+========================================= */
 
 function saveBudget() {
-
-    const budgetElement = document.getElementById("monthlyBudget");
-
-    if (!budgetElement) return;
-
-
-    const budget = Number(budgetElement.value);
-
+    const budget = Number(getValue("monthlyBudget"));
 
     if (!Number.isFinite(budget) || budget <= 0) {
-
-        document.getElementById("budgetMessage").textContent =
-
-            "Please enter a valid budget greater than zero.";
-
+        setText(
+            "budgetMessage",
+            "Please enter a valid budget greater than zero."
+        );
         return;
-
     }
 
-
-    localStorage.setItem(
-
-        "monthly_expense_budget",
-
-        String(budget)
-
-    );
-
+    localStorage.setItem("monthly_expense_budget", String(budget));
 
     updateBudget();
 
-
+    setText("budgetMessage", "Monthly budget saved successfully.");
 }
 
 
-// ==========================================
-// 18. UPDATE MONTHLY BUDGET
-// ==========================================
+/* =========================================
+   16. UPDATE BUDGET
+========================================= */
 
 function updateBudget() {
-
     const budget = Number(
-
         localStorage.getItem("monthly_expense_budget") || 0
-
     );
-
 
     const now = new Date();
 
-
     const monthStart = new Date(
-
         now.getFullYear(),
-
         now.getMonth(),
-
         1
-
     );
-
 
     const monthEnd = new Date(
-
         now.getFullYear(),
-
         now.getMonth() + 1,
-
         0
-
     );
-
 
     const currentMonthItems = getExpensesInRange(
-
         monthStart,
-
         monthEnd
-
     );
-
 
     const spent = getTotal(currentMonthItems);
 
+    setText("currentMonthSpending", money(spent));
 
-    document.getElementById("currentMonthSpending").textContent =
+    const percentageElement = document.getElementById("budgetPercentage");
+    const gradeElement = document.getElementById("budgetGrade");
+    const progress = document.getElementById("budgetProgressBar");
+    const message = document.getElementById("budgetMessage");
 
-        money(spent);
-
-
-    const percentageElement =
-
-        document.getElementById("budgetPercentage");
-
-
-    const gradeElement =
-
-        document.getElementById("budgetGrade");
-
-
-    const progress =
-
-        document.getElementById("budgetProgressBar");
-
-
-    const message =
-
-        document.getElementById("budgetMessage");
-
-
-    if (!budget) {
-
-        percentageElement.textContent = "Not set";
-
-        gradeElement.textContent = "-";
-
-        progress.style.width = "0%";
-
-        message.textContent =
-
-            "Set a monthly budget to activate the indicator.";
-
+    if (!percentageElement || !gradeElement || !progress || !message) {
         return;
-
     }
 
+    if (!budget) {
+        percentageElement.textContent = "Not set";
+        gradeElement.textContent = "-";
+        progress.style.width = "0%";
+        message.textContent = "Set a monthly budget to activate the indicator.";
+        return;
+    }
 
     const percentage = (spent / budget) * 100;
 
-
     let grade;
-
     let description;
 
-
     if (percentage <= 60) {
-
         grade = "A";
-
-        description = "Within 60% of your budget.";
-
-    }
-
-
-    else if (percentage <= 80) {
-
+        description = "Your budget usage is within 60%.";
+    } else if (percentage <= 80) {
         grade = "B";
-
         description = "Your budget usage is between 61% and 80%.";
-
-    }
-
-
-    else if (percentage <= 100) {
-
+    } else if (percentage <= 100) {
         grade = "C";
-
         description = "You are within your monthly budget.";
-
-    }
-
-
-    else if (percentage <= 120) {
-
+    } else if (percentage <= 120) {
         grade = "D";
-
         description = "You are above your monthly budget.";
-
-    }
-
-
-    else {
-
+    } else {
         grade = "E";
-
         description = "Your spending is significantly above your budget.";
-
     }
 
-
-    percentageElement.textContent =
-
-        `${percentage.toFixed(1)}%`;
-
-
+    percentageElement.textContent = `${percentage.toFixed(1)}%`;
     gradeElement.textContent = grade;
 
-
-    progress.style.width =
-
-        `${Math.min(percentage, 100)}%`;
-
+    progress.style.width = `${Math.min(percentage, 100)}%`;
 
     message.textContent =
-
-        `${description} Budget: ${money(budget)}. Remaining: ${money(budget - spent)}.`;
-
+        `${description} Budget: ${money(budget)}. ` +
+        `Remaining: ${money(budget - spent)}.`;
 }
 
 
-// ==========================================
-// 19. GET LOGGED-IN USER INFORMATION
-// ==========================================
+/* =========================================
+   17. USER INFORMATION FOR PDF
+========================================= */
 
 function getReportUserInfo() {
-
     try {
-
         const storedUser = localStorage.getItem("user");
 
         if (!storedUser) return {};
 
-
         const user = JSON.parse(storedUser);
 
-        if (!user || typeof user !== "object") {
-
-            return {};
-
-        }
-
-
         return {
-
             fullName: user.full_name || user.name || "Not available",
-
             username: user.username || "Not available",
-
             email: user.email || "Not available",
-
             userId: user.user_id || user.id || "Not available"
-
         };
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Unable to read user information:",
-            error
-        );
-
+    } catch (error) {
+        console.error("Unable to read user information:", error);
         return {};
-
     }
-
 }
 
 
-// ==========================================
-// 20. DRAW PDF HEADER
-// ==========================================
+/* =========================================
+   18. PDF SECTION TITLE
+========================================= */
 
-function drawPdfHeader(doc, pageWidth) {
-
-    doc.setFillColor(36, 52, 71);
-
-    doc.rect(0, 0, pageWidth, 32, "F");
-
-
-    // Application name
-
-    doc.setTextColor(255, 255, 255);
-
+function drawSectionTitle(doc, title, y) {
     doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(36, 52, 71);
+    doc.text(title, 14, y);
 
-    doc.setFontSize(18);
-
-    doc.text("Daily Expense Tracker", 14, 14);
-
-
-    // Subtitle
-
-    doc.setFont("helvetica", "normal");
-
-    doc.setFontSize(10);
-
-    doc.setTextColor(213, 220, 227);
-
-    doc.text("Expense Report", 14, 22);
-
-
-    // Generated date
-
-    doc.setFontSize(9);
-
-    doc.text(
-
-        "Generated: " + dateString(new Date()),
-
-        pageWidth - 14,
-
-        14,
-
-        { align: "right" }
-
-    );
-
+    doc.setDrawColor(37, 99, 235);
+    doc.setLineWidth(0.5);
+    doc.line(14, y + 2, 65, y + 2);
 
     doc.setTextColor(0, 0, 0);
-
 }
 
 
-// ==========================================
-// 21. DRAW PDF FOOTER
-// ==========================================
+/* =========================================
+   19. PDF HEADER
+========================================= */
 
-function drawPdfFooter(
+function drawPdfHeader(doc, pageWidth) {
+    doc.setFillColor(36, 52, 71);
+    doc.rect(0, 0, pageWidth, 32, "F");
 
-    doc,
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(17);
+    doc.text("Daily Expense Tracker", 14, 14);
 
-    pageWidth,
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text("Expense Report", 14, 22);
 
-    pageHeight,
+    doc.setFontSize(9);
+    doc.text(
+        "Generated: " + dateString(new Date()),
+        pageWidth - 14,
+        14,
+        { align: "right" }
+    );
 
-    pageCount,
-
-    reportStartDate,
-
-    reportEndDate
-
-) {
-
-    const margin = 14;
+    doc.setTextColor(0, 0, 0);
+}
 
 
+/* =========================================
+   20. PDF FOOTER
+========================================= */
+
+function drawPdfFooter(doc, pageWidth, pageHeight, pageCount) {
     for (let page = 1; page <= pageCount; page++) {
-
         doc.setPage(page);
 
-
         doc.setDrawColor(220, 224, 230);
-
-        doc.setLineWidth(0.3);
-
-
-        doc.line(
-
-            margin,
-
-            pageHeight - 14,
-
-            pageWidth - margin,
-
-            pageHeight - 14
-
-        );
-
+        doc.line(14, pageHeight - 14, pageWidth - 14, pageHeight - 14);
 
         doc.setFont("helvetica", "normal");
-
         doc.setFontSize(8);
-
         doc.setTextColor(119, 119, 119);
 
-
-        // Application name
-
-        doc.text(
-
-            "Daily Expense Tracker",
-
-            margin,
-
-            pageHeight - 8
-
-        );
-
-
-        // Reporting period
+        doc.text("Daily Expense Tracker", 14, pageHeight - 8);
 
         doc.text(
-
-            dateString(reportStartDate) +
-            " to " +
-            dateString(reportEndDate),
-
-            pageWidth / 2,
-
-            pageHeight - 8,
-
-            { align: "center" }
-
-        );
-
-
-        // Page number
-
-        doc.text(
-
             `Page ${page} of ${pageCount}`,
-
-            pageWidth - margin,
-
+            pageWidth - 14,
             pageHeight - 8,
-
             { align: "right" }
-
         );
-
     }
-
 }
 
 
-// ==========================================
-// 22. DOWNLOAD PDF REPORT
-// ==========================================
+/* =========================================
+   21. DOWNLOAD PDF
+========================================= */
 
 function downloadPDFReport() {
-
     try {
-
-
-        // --------------------------------------
-        // CHECK JSPDF
-        // --------------------------------------
-
-        if (
-
-            !window.jspdf ||
-
-            !window.jspdf.jsPDF
-
-        ) {
-
-            alert(
-
-                "jsPDF library failed to load. Please refresh the page."
-
-            );
-
-            console.error("jsPDF is unavailable.");
-
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("jsPDF library is not loaded. Check your internet connection and refresh.");
             return;
-
         }
-
 
         const { jsPDF } = window.jspdf;
-
-
         const doc = new jsPDF({
-
             orientation: "portrait",
-
             unit: "mm",
-
             format: "a4"
-
         });
 
-
-        // --------------------------------------
-        // CHECK AUTOTABLE
-        // --------------------------------------
-
         if (typeof doc.autoTable !== "function") {
-
-            alert(
-
-                "PDF table plugin failed to load. Please refresh the page."
-
-            );
-
-            console.error("AutoTable plugin is unavailable.");
-
+            alert("PDF table plugin is not loaded. Please refresh the page.");
             return;
-
         }
-
-
-        // --------------------------------------
-        // VALIDATE DATE RANGE
-        // --------------------------------------
 
         if (!startDate || !endDate) {
-
-            alert("Please select a reporting period first.");
-
+            alert("Please select a reporting period.");
             return;
-
         }
 
-
-        // --------------------------------------
-        // GET EXPENSES
-        // --------------------------------------
-
-        const items = getExpensesInRange(
-
-            startDate,
-
-            endDate
-
-        );
-
+        const items = getExpensesInRange(startDate, endDate);
 
         if (!items.length) {
-
-            alert(
-
-                "No expenses found for the selected period."
-
-            );
-
+            alert("No expenses found for the selected period.");
             return;
-
         }
-
-
-        // --------------------------------------
-        // CALCULATE SUMMARY
-        // --------------------------------------
 
         const total = getTotal(items);
-
         const average = total / items.length;
 
-
         const highest = items.reduce((max, item) => {
-
-            return Number(item.amount || 0) >
-
-                Number(max?.amount || 0)
-
+            return !max || Number(item.amount || 0) > Number(max.amount || 0)
                 ? item
-
                 : max;
-
         }, null);
 
-
-        // --------------------------------------
-        // PREVIOUS PERIOD
-        // --------------------------------------
-
-        const previousTotal = getTotal(
-
-            getPreviousRangeExpenses()
-
-        );
-
-
-        let comparison = "No previous-period spending";
-
-
-        if (previousTotal > 0) {
-
-            const change =
-
-                ((total - previousTotal) / previousTotal) * 100;
-
-
-            comparison =
-
-                `${Math.abs(change).toFixed(1)}% ${
-                    change > 0
-                        ? "higher"
-                        : change < 0
-                            ? "lower"
-                            : "unchanged"
-                }`;
-
-        }
-
-
-        // --------------------------------------
-        // USER INFORMATION
-        // --------------------------------------
-
-        const userInfo = getReportUserInfo();
-
-
-        // --------------------------------------
-        // PDF PAGE SETTINGS
-        // --------------------------------------
+        const user = getReportUserInfo();
 
         const pageWidth = doc.internal.pageSize.getWidth();
-
         const pageHeight = doc.internal.pageSize.getHeight();
-
-        const margin = 14;
-
-
-        // --------------------------------------
-        // PDF HEADER
-        // --------------------------------------
 
         drawPdfHeader(doc, pageWidth);
 
-
         let y = 42;
 
-
-        // ======================================
         // REPORT INFORMATION
-        // ======================================
-
         drawSectionTitle(doc, "Report Information", y);
-
         y += 9;
 
-
         const reportInformation = [
-
-            [
-
-                "Report Period",
-
-                dateString(startDate) +
-                " to " +
-                dateString(endDate)
-
-            ],
-
-            [
-
-                "Full Name",
-
-                userInfo.fullName || "Not available"
-
-            ],
-
-            [
-
-                "Username",
-
-                userInfo.username || "Not available"
-
-            ],
-
-            [
-
-                "Email",
-
-                userInfo.email || "Not available"
-
-            ],
-
-            [
-
-                "User ID",
-
-                String(userInfo.userId || "Not available")
-
-            ],
-
-            [
-
-                "Transactions",
-
-                String(items.length)
-
-            ],
-
-            [
-
-                "Total Spending",
-
-                pdfMoney(total)
-
-            ]
-
+            ["Report Period", `${dateString(startDate)} to ${dateString(endDate)}`],
+            ["Full Name", user.fullName || "Not available"],
+            ["Username", user.username || "Not available"],
+            ["Email", user.email || "Not available"],
+            ["User ID", String(user.userId || "Not available")]
         ];
-
 
         doc.setFontSize(9);
 
-
         reportInformation.forEach(([label, value]) => {
-
             doc.setFont("helvetica", "bold");
-
-            doc.text(label + ":", margin, y);
-
+            doc.text(label + ":", 14, y);
 
             doc.setFont("helvetica", "normal");
 
+            const wrapped = doc.splitTextToSize(String(value), 130);
+            doc.text(wrapped, 52, y);
 
-            const wrappedValue = doc.splitTextToSize(
-
-                String(value),
-
-                125
-
-            );
-
-
-            doc.text(
-
-                wrappedValue,
-
-                margin + 38,
-
-                y
-
-            );
-
-
-            y += Math.max(
-
-                6,
-
-                wrappedValue.length * 4.5
-
-            );
-
+            y += Math.max(6, wrapped.length * 4.5);
         });
-
-
-        y += 6;
-
-
-        // ======================================
-        // EXPENSE SUMMARY TABLE
-        // ======================================
-
-        drawSectionTitle(doc, "Expense Summary", y);
 
         y += 5;
 
+        // SUMMARY TABLE
+        drawSectionTitle(doc, "Expense Summary", y);
+        y += 5;
 
         doc.autoTable({
-
             startY: y,
-
-            head: [
-
-                ["Metric", "Value"]
-
-            ],
-
+            head: [["Metric", "Value"]],
             body: [
-
-                [
-
-                    "Total Spending",
-
-                    pdfMoney(total)
-
-                ],
-
-                [
-
-                    "Number of Transactions",
-
-                    String(items.length)
-
-                ],
-
-                [
-
-                    "Average Expense",
-
-                    pdfMoney(average)
-
-                ],
-
-                [
-
-                    "Highest Expense",
-
-                    pdfMoney(highest?.amount || 0)
-
-                ],
-
-                [
-
-                    "Highest Expense Date",
-
-                    highest
-
-                        ? String(highest.expense_date || "").slice(0, 10)
-
-                        : "No records"
-
-                ],
-
-                [
-
-                    "Previous Period Comparison",
-
-                    comparison
-
-                ]
-
+                ["Total Spending", pdfMoney(total)],
+                ["Number of Transactions", String(items.length)],
+                ["Average Expense", pdfMoney(average)],
+                ["Highest Expense", pdfMoney(highest.amount)],
+                ["Highest Expense Date", String(highest.expense_date || "").slice(0, 10)]
             ],
-
             theme: "grid",
-
             headStyles: {
-
                 fillColor: [37, 99, 235],
-
-                textColor: 255,
-
-                fontStyle: "bold"
-
+                textColor: 255
             },
-
             styles: {
-
                 fontSize: 9,
-
-                cellPadding: 3,
-
-                valign: "middle"
-
+                cellPadding: 3
             },
-
-            columnStyles: {
-
-                0: {
-
-                    cellWidth: 70,
-
-                    fontStyle: "bold"
-
-                },
-
-                1: {
-
-                    halign: "right"
-
-                }
-
-            },
-
             margin: {
-
-                top: 40,
-
+                top: 38,
                 bottom: 20,
-
-                left: margin,
-
-                right: margin
-
+                left: 14,
+                right: 14
             },
-
-            didDrawPage: function () {
-
-                drawPdfHeader(doc, pageWidth);
-
-            }
-
+            didDrawPage: () => drawPdfHeader(doc, pageWidth)
         });
-
 
         let nextY = doc.lastAutoTable.finalY + 12;
 
-
-        // ======================================
-        // CATEGORY-WISE SPENDING
-        // ======================================
-
+        // CATEGORY TABLE
         const categoryTotals = {};
 
-
         items.forEach(expense => {
-
             const category = expense.category || "Other";
 
-
             categoryTotals[category] =
-
                 (categoryTotals[category] || 0) +
-
                 Number(expense.amount || 0);
-
         });
-
 
         const categoryRows = Object.entries(categoryTotals)
-
             .sort((a, b) => b[1] - a[1])
-
-            .map(([category, amount]) => {
-
-                const percentage = total > 0
-
-                    ? ((amount / total) * 100).toFixed(1) + "%"
-
-                    : "0.0%";
-
-
-                return [
-
-                    category,
-
-                    pdfMoney(amount),
-
-                    percentage
-
-                ];
-
-            });
-
+            .map(([category, amount]) => [
+                category,
+                pdfMoney(amount),
+                total > 0
+                    ? `${((amount / total) * 100).toFixed(1)}%`
+                    : "0%"
+            ]);
 
         if (nextY > pageHeight - 45) {
-
             doc.addPage();
-
             nextY = 42;
-
             drawPdfHeader(doc, pageWidth);
-
         }
 
-
-        drawSectionTitle(
-
-            doc,
-
-            "Category-wise Spending",
-
-            nextY
-
-        );
-
-
+        drawSectionTitle(doc, "Category-wise Spending", nextY);
         nextY += 5;
 
-
         doc.autoTable({
-
             startY: nextY,
-
-            head: [
-
-                ["Category", "Amount", "Share"]
-
-            ],
-
+            head: [["Category", "Amount", "Share"]],
             body: categoryRows,
-
             theme: "striped",
-
             headStyles: {
-
                 fillColor: [37, 99, 235],
-
-                textColor: 255,
-
-                fontStyle: "bold"
-
+                textColor: 255
             },
-
             styles: {
-
                 fontSize: 9,
-
                 cellPadding: 3
-
             },
-
-            columnStyles: {
-
-                0: {
-
-                    cellWidth: 70
-
-                },
-
-                1: {
-
-                    halign: "right"
-
-                },
-
-                2: {
-
-                    cellWidth: 30,
-
-                    halign: "right"
-
-                }
-
-            },
-
             margin: {
-
-                top: 40,
-
+                top: 38,
                 bottom: 20,
-
-                left: margin,
-
-                right: margin
-
+                left: 14,
+                right: 14
             },
-
-            didDrawPage: function () {
-
-                drawPdfHeader(doc, pageWidth);
-
-            }
-
+            didDrawPage: () => drawPdfHeader(doc, pageWidth)
         });
-
 
         nextY = doc.lastAutoTable.finalY + 12;
 
-
-        // ======================================
-        // TRANSACTION DETAILS
-        // ======================================
-
+        // TRANSACTION TABLE
         if (nextY > pageHeight - 45) {
-
             doc.addPage();
-
             nextY = 42;
-
             drawPdfHeader(doc, pageWidth);
-
         }
 
-
-        drawSectionTitle(
-
-            doc,
-
-            "Expense Transaction Details",
-
-            nextY
-
-        );
-
-
+        drawSectionTitle(doc, "Expense Transaction Details", nextY);
         nextY += 5;
 
-
         const transactionRows = [...items]
-
-            .sort((a, b) => {
-
-                return String(a.expense_date || "")
-
-                    .localeCompare(
-
-                        String(b.expense_date || "")
-
-                    );
-
-            })
-
+            .sort((a, b) =>
+                String(a.expense_date || "").localeCompare(
+                    String(b.expense_date || "")
+                )
+            )
             .map(expense => [
-
                 String(expense.expense_date || "").slice(0, 10),
-
-                expense.category || "Other",
-
-                expense.description || "-",
-
+                String(expense.category || "Other"),
+                String(expense.description || "-"),
                 pdfMoney(expense.amount)
-
             ]);
 
-
         doc.autoTable({
-
             startY: nextY,
-
-            head: [
-
-                [
-
-                    "Date",
-
-                    "Category",
-
-                    "Description",
-
-                    "Amount"
-
-                ]
-
-            ],
-
+            head: [["Date", "Category", "Description", "Amount"]],
             body: transactionRows,
-
             theme: "striped",
-
             headStyles: {
-
                 fillColor: [37, 99, 235],
-
-                textColor: 255,
-
-                fontStyle: "bold"
-
+                textColor: 255
             },
-
             styles: {
-
                 fontSize: 8,
-
                 cellPadding: 2.5,
-
-                overflow: "linebreak",
-
-                valign: "top"
-
+                overflow: "linebreak"
             },
-
             columnStyles: {
-
-                0: {
-
-                    cellWidth: 25
-
-                },
-
-                1: {
-
-                    cellWidth: 30
-
-                },
-
-                2: {
-
-                    cellWidth: "auto"
-
-                },
-
-                3: {
-
-                    cellWidth: 30,
-
-                    halign: "right"
-
-                }
-
+                0: { cellWidth: 25 },
+                1: { cellWidth: 30 },
+                2: { cellWidth: "auto" },
+                3: { cellWidth: 30 }
             },
-
             margin: {
-
-                top: 40,
-
+                top: 38,
                 bottom: 20,
-
-                left: margin,
-
-                right: margin
-
+                left: 14,
+                right: 14
             },
-
-            didDrawPage: function () {
-
-                drawPdfHeader(doc, pageWidth);
-
-            }
-
+            didDrawPage: () => drawPdfHeader(doc, pageWidth)
         });
 
-
-        // ======================================
-        // FOOTER ON EVERY PAGE
-        // ======================================
-
+        // FOOTER
         const pageCount = doc.internal.getNumberOfPages();
 
-
         drawPdfFooter(
-
             doc,
-
             pageWidth,
-
             pageHeight,
-
-            pageCount,
-
-            startDate,
-
-            endDate
-
+            pageCount
         );
 
-
-        // ======================================
-        // DOWNLOAD PDF
-        // ======================================
-
         const fileName =
-
-            "Expense_Report_" +
-
-            dateString(startDate) +
-
-            "_to_" +
-
-            dateString(endDate) +
-
-            ".pdf";
-
+            `Expense_Report_${dateString(startDate)}_to_${dateString(endDate)}.pdf`;
 
         doc.save(fileName);
 
-
-        console.log(
-
-            "PDF download started successfully:",
-
-            fileName
-
-        );
-
-
+    } catch (error) {
+        console.error("PDF generation error:", error);
+        alert("Unable to generate PDF. Please check the browser console.");
     }
-
-    catch (error) {
-
-        console.error(
-
-            "PDF generation error:",
-
-            error
-
-        );
-
-
-        alert(
-
-            "Unable to generate PDF. Check browser F12 Console."
-
-        );
-
-    }
-
 }
 
 
-// ==========================================
-// 23. CHECK EXTERNAL LIBRARIES
-// ==========================================
+/* =========================================
+   22. CHECK LIBRARIES
+========================================= */
 
 function checkPDFLibraries() {
-
-    console.log("========== LIBRARY CHECK ==========");
-
-
-    console.log(
-
-        "jsPDF:",
-
-        typeof window.jspdf
-
-    );
-
-
-    console.log(
-
-        "Chart.js:",
-
-        typeof window.Chart
-
-    );
-
+    console.log("jsPDF:", typeof window.jspdf);
+    console.log("Chart.js:", typeof window.Chart);
 
     if (window.jspdf?.jsPDF) {
-
         const testDoc = new window.jspdf.jsPDF();
-
-
-        console.log(
-
-            "AutoTable:",
-
-            typeof testDoc.autoTable
-
-        );
-
+        console.log("AutoTable:", typeof testDoc.autoTable);
     }
-
-
-    console.log("===================================");
-
 }
 
 
-// ==========================================
-// 24. LOAD REPORT DATA FROM API
-// ==========================================
+/* =========================================
+   23. LOAD EXPENSES FROM FLASK API
+========================================= */
 
 async function loadReports() {
-
-    if (!token) return;
-
+    if (!token) {
+        window.location.href = "/login";
+        return;
+    }
 
     try {
-
         showMessage("Loading report data...");
 
-
-        const response = await fetch(
-
-            "/api/expenses",
-
-            {
-
-                method: "GET",
-
-                headers: {
-
-                    "Authorization": `Bearer ${token}`
-
-                }
-
+        const response = await fetch("/api/expenses", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
             }
+        });
 
-        );
-
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+            return;
+        }
 
         const data = await response.json();
 
-
-        // Authentication check
-
-        if (response.status === 401) {
-
-            localStorage.removeItem("access_token");
-
-            localStorage.removeItem("user");
-
-            window.location.href = "/login";
-
-            return;
-
-        }
-
-
         if (!response.ok) {
-
-            throw new Error(
-
-                data.message || "Unable to load expenses."
-
-            );
-
+            throw new Error(data.message || "Unable to load expenses.");
         }
-
-
-        // Read API response
 
         allExpenses = Array.isArray(data)
-
             ? data
-
-            : (
-
-                data.expenses ||
-
-                data.data ||
-
-                []
-
-            );
-
+            : (data.expenses || data.data || []);
 
         if (!Array.isArray(allExpenses)) {
-
-            throw new Error(
-
-                "Unexpected API response format."
-
-            );
-
+            throw new Error("Unexpected API response format.");
         }
 
-
-        // Load saved monthly budget
-
+        // Restore saved budget
         const savedBudget = localStorage.getItem(
-
             "monthly_expense_budget"
-
         );
 
+        const budgetInput = document.getElementById("monthlyBudget");
 
-        if (savedBudget) {
-
-            const budgetElement = document.getElementById(
-
-                "monthlyBudget"
-
-            );
-
-
-            if (budgetElement) {
-
-                budgetElement.value = savedBudget;
-
-            }
-
+        if (budgetInput && savedBudget) {
+            budgetInput.value = savedBudget;
         }
 
-
-        // Default reporting period: This Week
-
+        // Default: This Week
         const range = getPeriodRange("week");
 
-
         startDate = range.start;
-
         endDate = range.end;
-
 
         renderReport();
 
-
         showMessage("Reports loaded successfully.");
 
+    } catch (error) {
+        console.error("Report loading error:", error);
+        showMessage(error.message || "Unable to load reports.", true);
     }
-
-
-    catch (error) {
-
-        console.error(
-
-            "Report loading error:",
-
-            error
-
-        );
-
-
-        showMessage(error.message, true);
-
-    }
-
 }
 
 
-// ==========================================
-// 25. INITIALIZE REPORTS PAGE
-// ==========================================
+/* =========================================
+   24. INITIALIZE PAGE
+========================================= */
 
-document.addEventListener(
-
-    "DOMContentLoaded",
-
-    function () {
-
-        checkPDFLibraries();
-
-        loadReports();
-
-    }
-
-);
+document.addEventListener("DOMContentLoaded", function () {
+    checkPDFLibraries();
+    loadReports();
+});
 
 </script>
 

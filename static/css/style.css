@@ -693,6 +693,217 @@ th {
 
 }
 
+/* Reports page */
+
+.reports-page {
+    max-width: 1200px;
+    margin: 25px auto;
+    padding: 15px;
+}
+
+.reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.reports-header h2 {
+    margin-bottom: 6px;
+}
+
+.reports-header p,
+.report-muted {
+    color: #777;
+    font-size: 14px;
+}
+
+.report-panel {
+    background: #fff;
+    padding: 22px;
+    margin-bottom: 22px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.report-panel h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.period-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 18px 0;
+}
+
+.period-btn {
+    padding: 10px 18px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.period-btn.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.custom-dates {
+    display: flex;
+    align-items: end;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.custom-dates div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.custom-dates input,
+.budget-controls input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.report-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.report-stat {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    min-width: 0;
+}
+
+.report-stat span {
+    color: #666;
+    font-size: 14px;
+}
+
+.report-stat h2 {
+    font-size: 22px;
+    margin: 12px 0;
+    overflow-wrap: anywhere;
+}
+
+.report-stat small {
+    color: #777;
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.report-chart {
+    height: 300px;
+    position: relative;
+    margin-top: 15px;
+}
+
+.budget-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0 20px;
+}
+
+.budget-result {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.budget-result span {
+    color: #777;
+    font-size: 14px;
+}
+
+.budget-result h3 {
+    margin-top: 8px;
+}
+
+.budget-progress {
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.budget-progress div {
+    height: 100%;
+    width: 0;
+    background: #2563eb;
+    transition: width 0.3s ease;
+}
+
+#spendingInsights {
+    padding-left: 22px;
+    line-height: 2;
+}
+
+#reportMessage {
+    margin-top: 10px;
+}
+
+@media (max-width: 850px) {
+    .report-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .report-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 550px) {
+    .reports-page {
+        padding: 10px;
+    }
+
+    .report-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .budget-result {
+        grid-template-columns: 1fr;
+    }
+
+    .custom-dates {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .custom-dates div,
+    .custom-dates input {
+        width: 100%;
+    }
+
+    .period-btn {
+        flex: 1;
+    }
+
+    .report-chart {
+        height: 250px;
+    }
+}
+
 
 @media (max-width: 600px) {
     .dashboard-header {

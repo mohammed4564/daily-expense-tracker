@@ -41,6 +41,10 @@ def edit_expense_page(expense_id):
         expense_id=expense_id
     )
 
+@app.route("/reports")
+def reports_page():
+    return render_template("reports.html")
+
 @app.route("/")
 def home():
      return render_template("home.html")

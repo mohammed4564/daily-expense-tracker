@@ -18,6 +18,11 @@
                 onclick="window.location.href='/add-expense'">
             + Add Expense
         </button>
+
+        <button class="btn-primary"
+        onclick="window.location.href='/reports'">
+    View Reports
+</button>
     </div>
 
     <!-- Summary Cards -->
@@ -79,43 +84,6 @@
 
     </div>
 
-    <!-- Reports and Analytics -->
-    <div class="report-section">
-
-        <div class="report-header">
-            <h2>Reports & Analytics</h2>
-            <p>Understand where your money is going.</p>
-        </div>
-
-        <div class="report-grid">
-
-            <!-- Category Pie Chart -->
-            <div class="report-card">
-                <h3>Expense by Category</h3>
-                <p class="report-subtitle">
-                    Category-wise spending breakdown
-                </p>
-
-                <div class="chart-container">
-                    <canvas id="categoryChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Date-wise Bar Chart -->
-            <div class="report-card">
-                <h3>Expense by Date</h3>
-                <p class="report-subtitle">
-                    Daily spending analysis
-                </p>
-
-                <div class="chart-container">
-                    <canvas id="dateChart"></canvas>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
 
     <!-- Expense Table -->
     <div class="table-card">

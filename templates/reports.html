@@ -1267,6 +1267,43 @@ function checkPDFLibraries() {
 
 
 // ======================================
+// GET LOGGED-IN USER INFORMATION
+// ======================================
+
+function getReportUserInfo() {
+
+    try {
+
+        const storedUser = localStorage.getItem("user");
+
+        if (!storedUser) {
+            return {};
+        }
+
+        const user = typeof storedUser === "string"
+            ? JSON.parse(storedUser)
+            : storedUser;
+
+        return {
+            fullName: user.full_name || user.name || "Not available",
+            username: user.username || "Not available",
+            email: user.email || "Not available",
+            userId: user.user_id || user.id || "Not available"
+        };
+
+    }
+
+    catch (error) {
+
+        console.error("Unable to read user information:", error);
+
+        return {};
+
+    }
+
+}
+
+// ======================================
 // DOWNLOAD PDF REPORT
 // ======================================
 
@@ -1390,85 +1427,115 @@ function downloadPDFReport() {
         // PDF HEADER
         // ======================================
 
-        doc.setFont("helvetica", "bold");
-
-        doc.setFontSize(20);
-
-        doc.text("Daily Expense Tracker", 14, 20);
-
-        doc.setFontSize(15);
-
-        doc.text("Expense Report", 14, 30);
-
-        doc.setFont("helvetica", "normal");
-
-        doc.setFontSize(10);
-
-        doc.text(
-            `Report Period: ${dateString(startDate)} to ${dateString(endDate)}`,
-            14,
-            40
-        );
-
-        doc.text(
-            `Generated On: ${dateString(new Date())}`,
-            14,
-            47
-        );
-
-
         // ======================================
-        // EXPENSE SUMMARY
-        // ======================================
+// PDF HEADER
+// ======================================
 
-        doc.setFontSize(13);
+const userInfo = getReportUserInfo();
 
-        doc.setFont("helvetica", "bold");
+doc.setFont("helvetica", "bold");
+doc.setFontSize(20);
 
-        doc.text("Expense Summary", 14, 60);
+doc.text("Daily Expense Tracker", 14, 20);
 
-        doc.autoTable({
+doc.setFontSize(15);
+doc.text("Expense Report", 14, 30);
 
-            startY: 65,
 
-            head: [
-                ["Metric", "Value"]
-            ],
+// Report information
+doc.setFont("helvetica", "normal");
+doc.setFontSize(10);
 
-            body: [
+doc.text(
+    `Report Period: ${dateString(startDate)} to ${dateString(endDate)}`,
+    14,
+    40
+);
 
-                ["Total Spending", `INR ${total.toFixed(2)}`],
+doc.text(
+    `Generated On: ${dateString(new Date())}`,
+    14,
+    47
+);
 
-                ["Number of Transactions", String(items.length)],
 
-                ["Average Expense", `INR ${average.toFixed(2)}`],
+// User information
+doc.setFont("helvetica", "bold");
+doc.setFontSize(12);
 
-                [
-                    "Highest Expense",
-                    `INR ${Number(highest.amount).toFixed(2)}`
-                ],
+doc.text("User Information", 14, 60);
 
-                [
-                    "Highest Expense Date",
-                    String(highest.expense_date).slice(0, 10)
-                ],
+doc.setFont("helvetica", "normal");
+doc.setFontSize(10);
 
-                ["Previous Period Comparison", comparison]
+doc.text(
+    `Full Name: ${userInfo.fullName || "Not available"}`,
+    14,
+    68
+);
 
-            ],
+doc.text(
+    `Username: ${userInfo.username || "Not available"}`,
+    14,
+    75
+);
 
-            theme: "grid",
+doc.text(
+    `Email: ${userInfo.email || "Not available"}`,
+    14,
+    82
+);
 
-            headStyles: {
-                fillColor: [37, 99, 235]
-            },
+doc.text(
+    `User ID: ${String(userInfo.userId || "Not available")}`,
+    14,
+    89
+);
 
-            styles: {
-                fontSize: 9
-            }
 
-        });
+// ======================================
+// EXPENSE SUMMARY
+// ======================================
 
+doc.setFontSize(13);
+doc.setFont("helvetica", "bold");
+
+doc.text("Expense Summary", 14, 103);
+
+doc.autoTable({
+
+    startY: 108,
+
+    head: [
+        ["Metric", "Value"]
+    ],
+
+    body: [
+        ["Total Spending", `INR ${total.toFixed(2)}`],
+        ["Number of Transactions", String(items.length)],
+        ["Average Expense", `INR ${average.toFixed(2)}`],
+        [
+            "Highest Expense",
+            `INR ${Number(highest.amount).toFixed(2)}`
+        ],
+        [
+            "Highest Expense Date",
+            String(highest.expense_date).slice(0, 10)
+        ],
+        ["Previous Period Comparison", comparison]
+    ],
+
+    theme: "grid",
+
+    headStyles: {
+        fillColor: [37, 99, 235]
+    },
+
+    styles: {
+        fontSize: 9
+    }
+
+});
 
         // ======================================
         // CATEGORY-WISE REPORT

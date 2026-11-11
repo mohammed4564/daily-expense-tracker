@@ -1,0 +1,8 @@
+
+Flask
+pyodbc
+python-dotenv
+psycopg2
+Werkzeug
+Flask-JWT-Extended
+requests

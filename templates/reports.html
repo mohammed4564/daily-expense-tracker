@@ -1,1284 +1,23 @@
-
-{% extends "base.html" %}
-
-{% block title %}Reports & Analytics - Daily Expense Tracker{% endblock %}
-
-{% block content %}
-
-<div class="reports-page">
-
-    <!-- Reports Header -->
-    <div class="reports-header">
-        <div>
-            <h2>Reports & Analytics</h2>
-            <p>Understand your spending patterns and track your expenses.</p>
-        </div>
-
-        <div class="report-actions">
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="downloadPDFReport()">
-                Download PDF Report
-            </button>
-
-            <button
-                type="button"
-                class="btn-edit"
-                onclick="window.location.href='/dashboard'">
-                Back to Dashboard
-            </button>
-        </div>
-    </div>
-
-    <!-- Period Filters -->
-    <section class="report-panel">
-        <h3>Select Reporting Period</h3>
-
-        <div class="period-buttons">
-            <button
-                type="button"
-                class="period-btn active"
-                data-period="week"
-                onclick="selectPeriod('week', this)">
-                This Week
-            </button>
-
-            <button
-                type="button"
-                class="period-btn"
-                data-period="month"
-                onclick="selectPeriod('month', this)">
-                This Month
-            </button>
-
-            <button
-                type="button"
-                class="period-btn"
-                data-period="year"
-                onclick="selectPeriod('year', this)">
-                This Year
-            </button>
-
-            <button
-                type="button"
-                class="period-btn"
-                data-period="custom"
-                onclick="selectPeriod('custom', this)">
-                Custom Range
-            </button>
-        </div>
-
-        <!-- Custom Date Range -->
-        <div id="customDates" class="custom-dates" style="display:none;">
-            <div>
-                <label for="fromDate">From Date</label>
-                <input type="date" id="fromDate">
-            </div>
-
-            <div>
-                <label for="toDate">To Date</label>
-                <input type="date" id="toDate">
-            </div>
-
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="applyCustomRange()">
-                Apply
-            </button>
-        </div>
-
-        <p id="periodLabel" class="report-muted"></p>
-        <p id="reportMessage" role="status"></p>
-    </section>
-
-    <!-- Summary Cards -->
-    <section class="report-summary">
-
-        <div class="report-stat">
-            <span>Total Spending</span>
-            <h2 id="totalSpending">₹0.00</h2>
-            <small id="periodComparison">Compared with previous period</small>
-        </div>
-
-        <div class="report-stat">
-            <span>Transactions</span>
-            <h2 id="transactionCount">0</h2>
-            <small>Number of expenses</small>
-        </div>
-
-        <div class="report-stat">
-            <span>Average Expense</span>
-            <h2 id="averageExpense">₹0.00</h2>
-            <small>Per transaction</small>
-        </div>
-
-        <div class="report-stat">
-            <span>Highest Expense</span>
-            <h2 id="highestExpense">₹0.00</h2>
-            <small id="highestExpenseDate">No records</small>
-        </div>
-
-    </section>
-
-    <!-- Monthly Budget Indicator -->
-    <section class="report-panel">
-
-        <h3>Monthly Budget Indicator</h3>
-
-        <p class="report-muted">
-            Enter a monthly budget to see how much of it you have used.
-        </p>
-
-        <div class="budget-controls">
-            <input
-                type="number"
-                id="monthlyBudget"
-                min="1"
-                step="0.01"
-                placeholder="Enter monthly budget">
-
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="saveBudget()">
-                Save Budget
-            </button>
-        </div>
-
-        <div class="budget-result">
-
-            <div>
-                <span>Current Month Spending</span>
-                <h3 id="currentMonthSpending">₹0.00</h3>
-            </div>
-
-            <div>
-                <span>Budget Used</span>
-                <h3 id="budgetPercentage">Not set</h3>
-            </div>
-
-            <div>
-                <span>Budget Grade</span>
-                <h3 id="budgetGrade">-</h3>
-            </div>
-
-        </div>
-
-        <div class="budget-progress">
-            <div id="budgetProgressBar"></div>
-        </div>
-
-        <p id="budgetMessage" class="report-muted"></p>
-
-    </section>
-
-    <!-- Charts -->
-    <section class="report-grid">
-
-        <div class="report-panel">
-            <h3>Category-wise Spending</h3>
-
-            <p class="report-muted">
-                Where your money is going
-            </p>
-
-            <div class="report-chart">
-                <canvas id="categoryChart"></canvas>
-            </div>
-        </div>
-
-        <div class="report-panel">
-            <h3>Spending Trend</h3>
-
-            <p class="report-muted">
-                How your spending changes over time
-            </p>
-
-            <div class="report-chart">
-                <canvas id="trendChart"></canvas>
-            </div>
-        </div>
-
-    </section>
-
-    <!-- Top Categories -->
-    <section class="report-panel">
-
-        <h3>Top Spending Categories</h3>
-
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Total Spent</th>
-                        <th>Transactions</th>
-                        <th>Share of Spending</th>
-                    </tr>
-                </thead>
-
-                <tbody id="topCategories">
-                    <tr>
-                        <td colspan="4">Loading report...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-    </section>
-
-    <!-- Spending Insights -->
-    <section class="report-panel">
-        <h3>Spending Insights</h3>
-
-        <ul id="spendingInsights">
-            <li>Loading insights...</li>
-        </ul>
-    </section>
-
-</div>
-
-{% endblock %}
-
-
-{% block scripts %}
-
-<!-- ======================================
-     EXTERNAL LIBRARIES
-====================================== -->
-
-<!-- jsPDF library -->
-<script
-    src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"
-    onerror="console.error('Failed to load jsPDF library');">
-</script>
-
-<!-- jsPDF AutoTable plugin -->
-<script
-    src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"
-    onerror="console.error('Failed to load jsPDF AutoTable plugin');">
-</script>
-
-<!-- Chart.js library -->
-<script
-    src="https://cdn.jsdelivr.net/npm/chart.js"
-    onerror="console.error('Failed to load Chart.js');">
-</script>
-
-
-<script>
-
 // ======================================
-// AUTHENTICATION
+// FORMAT CURRENCY FOR PDF
 // ======================================
-
-const token = localStorage.getItem("access_token");
-
-if (!token) {
-    window.location.href = "/login";
-}
-
-
-// ======================================
-// GLOBAL VARIABLES
-// ======================================
-
-let allExpenses = [];
-
-let selectedPeriod = "week";
-
-let startDate = null;
-let endDate = null;
-
-let categoryChart = null;
-let trendChart = null;
-
-
-// ======================================
-// CURRENCY FORMAT
-// ======================================
-
-function money(amount) {
-
-    return Number(amount || 0).toLocaleString("en-IN", {
-        style: "currency",
-        currency: "INR"
+function pdfMoney(amount) {
+    const n = Number(amount);
+    if (!Number.isFinite(n)) return "INR 0.00";
+    return "INR " + n.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
     });
-
-}
-
-
-// ======================================
-// DATE HELPERS
-// ======================================
-
-function dateString(date) {
-
-    const year = date.getFullYear();
-
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-
-}
-
-
-function parseDate(value) {
-
-    const parts = String(value)
-        .slice(0, 10)
-        .split("-")
-        .map(Number);
-
-    return new Date(
-        parts[0],
-        parts[1] - 1,
-        parts[2]
-    );
-
-}
-
-
-function addDays(date, days) {
-
-    const result = new Date(date);
-
-    result.setDate(result.getDate() + days);
-
-    return result;
-
-}
-
-
-// ======================================
-// GET REPORTING PERIOD
-// ======================================
-
-function getPeriodRange(period) {
-
-    const today = new Date();
-
-    today.setHours(0, 0, 0, 0);
-
-    let start;
-    let end;
-
-    if (period === "week") {
-
-        // Monday to Sunday
-
-        const day = today.getDay();
-
-        const mondayOffset = day === 0 ? -6 : 1 - day;
-
-        start = addDays(today, mondayOffset);
-
-        end = addDays(start, 6);
-
-    }
-
-    else if (period === "month") {
-
-        start = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            1
-        );
-
-        end = new Date(
-            today.getFullYear(),
-            today.getMonth() + 1,
-            0
-        );
-
-    }
-
-    else if (period === "year") {
-
-        start = new Date(
-            today.getFullYear(),
-            0,
-            1
-        );
-
-        end = new Date(
-            today.getFullYear(),
-            11,
-            31
-        );
-
-    }
-
-    return { start, end };
-
-}
-
-
-// ======================================
-// SELECT REPORTING PERIOD
-// ======================================
-
-function selectPeriod(period, button) {
-
-    selectedPeriod = period;
-
-    document.querySelectorAll(".period-btn").forEach(btn => {
-        btn.classList.remove("active");
-    });
-
-    button.classList.add("active");
-
-    const customDates = document.getElementById("customDates");
-
-    customDates.style.display =
-        period === "custom" ? "flex" : "none";
-
-    if (period !== "custom") {
-
-        const range = getPeriodRange(period);
-
-        startDate = range.start;
-
-        endDate = range.end;
-
-        renderReport();
-
-    }
-
-}
-
-
-// ======================================
-// APPLY CUSTOM DATE RANGE
-// ======================================
-
-function applyCustomRange() {
-
-    const from = document.getElementById("fromDate").value;
-
-    const to = document.getElementById("toDate").value;
-
-    if (!from || !to) {
-
-        showMessage("Please select both dates.", true);
-
-        return;
-
-    }
-
-    if (from > to) {
-
-        showMessage("From Date cannot be after To Date.", true);
-
-        return;
-
-    }
-
-    startDate = parseDate(from);
-
-    endDate = parseDate(to);
-
-    selectedPeriod = "custom";
-
-    renderReport();
-
-    showMessage("Custom report generated successfully.");
-
-}
-
-
-// ======================================
-// SHOW MESSAGE
-// ======================================
-
-function showMessage(message, isError = false) {
-
-    const element = document.getElementById("reportMessage");
-
-    if (!element) return;
-
-    element.textContent = message;
-
-    element.className = isError
-        ? "message error"
-        : "message success";
-
-}
-
-
-// ======================================
-// GET EXPENSES IN DATE RANGE
-// ======================================
-
-function getExpensesInRange(start, end) {
-
-    const from = dateString(start);
-
-    const to = dateString(end);
-
-    return allExpenses.filter(expense => {
-
-        const date = String(expense.expense_date || "").slice(0, 10);
-
-        return date >= from && date <= to;
-
-    });
-
-}
-
-
-// ======================================
-// GET TOTAL EXPENSE
-// ======================================
-
-function getTotal(items) {
-
-    return items.reduce((sum, expense) => {
-
-        return sum + Number(expense.amount || 0);
-
-    }, 0);
-
-}
-
-
-// ======================================
-// PREVIOUS PERIOD EXPENSES
-// ======================================
-
-function getPreviousRangeExpenses() {
-
-    const duration = Math.round(
-        (endDate - startDate) / 86400000
-    ) + 1;
-
-    const previousEnd = addDays(startDate, -1);
-
-    const previousStart = addDays(
-        previousEnd,
-        -(duration - 1)
-    );
-
-    return getExpensesInRange(previousStart, previousEnd);
-
-}
-
-
-// ======================================
-// RENDER REPORT
-// ======================================
-
-function renderReport() {
-
-    if (!startDate || !endDate) return;
-
-    const items = getExpensesInRange(startDate, endDate);
-
-    const total = getTotal(items);
-
-    const previousTotal = getTotal(getPreviousRangeExpenses());
-
-
-    // Reporting period
-
-    document.getElementById("periodLabel").textContent =
-        `Report: ${dateString(startDate)} to ${dateString(endDate)}`;
-
-
-    // Total spending
-
-    document.getElementById("totalSpending").textContent =
-        money(total);
-
-
-    // Transaction count
-
-    document.getElementById("transactionCount").textContent =
-        items.length;
-
-
-    // Average expense
-
-    document.getElementById("averageExpense").textContent =
-        money(items.length ? total / items.length : 0);
-
-
-    // Highest expense
-
-    const highest = items.reduce((max, item) => {
-
-        return Number(item.amount || 0) >
-            Number(max?.amount || 0)
-            ? item
-            : max;
-
-    }, null);
-
-
-    document.getElementById("highestExpense").textContent =
-        money(highest?.amount || 0);
-
-
-    document.getElementById("highestExpenseDate").textContent =
-        highest
-            ? String(highest.expense_date).slice(0, 10)
-            : "No records";
-
-
-    // Previous period comparison
-
-    let comparison;
-
-    if (previousTotal > 0) {
-
-        const change =
-            ((total - previousTotal) / previousTotal) * 100;
-
-        comparison =
-            `${Math.abs(change).toFixed(1)}% ${
-                change > 0
-                    ? "higher"
-                    : change < 0
-                        ? "lower"
-                        : "unchanged"
-            } than previous period`;
-
-    }
-
-    else if (total > 0) {
-
-        comparison = "No expenses in previous period";
-
-    }
-
-    else {
-
-        comparison = "No expenses in either period";
-
-    }
-
-    document.getElementById("periodComparison").textContent =
-        comparison;
-
-
-    // Update reports
-
-    updateCategoryChart(items);
-
-    updateTrendChart(items);
-
-    updateTopCategories(items);
-
-    updateInsights(items, total, previousTotal);
-
-    updateBudget();
-
-}
-
-
-// ======================================
-// CATEGORY CHART
-// ======================================
-
-function updateCategoryChart(items) {
-
-    const canvas = document.getElementById("categoryChart");
-
-    if (!canvas) {
-        console.error("categoryChart canvas not found.");
-        return;
-    }
-
-    if (typeof window.Chart === "undefined") {
-        console.error("Chart.js library is not loaded.");
-        return;
-    }
-
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
-    const totals = {};
-
-    items.forEach(item => {
-
-        const category = item.category || "Other";
-
-        totals[category] =
-            (totals[category] || 0) +
-            Number(item.amount || 0);
-
-    });
-
-    if (categoryChart) {
-        categoryChart.destroy();
-    }
-
-    categoryChart = new Chart(ctx, {
-
-        type: "doughnut",
-
-        data: {
-
-            labels: Object.keys(totals),
-
-            datasets: [{
-                label: "Category Spending",
-                data: Object.values(totals)
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            plugins: {
-
-                tooltip: {
-
-                    callbacks: {
-
-                        label: context => {
-                            return `${context.label}: ${money(context.raw)}`;
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-    });
-
-}
-
-
-// ======================================
-// TREND CHART
-// ======================================
-
-function updateTrendChart(items) {
-
-    const canvas = document.getElementById("trendChart");
-
-    if (!canvas) {
-        console.error("trendChart canvas not found.");
-        return;
-    }
-
-    if (typeof window.Chart === "undefined") {
-        console.error("Chart.js library is not loaded.");
-        return;
-    }
-
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
-    const totals = {};
-
-    const duration = Math.round(
-        (endDate - startDate) / 86400000
-    ) + 1;
-
-    let grouping = "day";
-
-    if (
-        selectedPeriod === "year" ||
-        (selectedPeriod === "custom" && duration > 90)
-    ) {
-
-        grouping = "month";
-
-    }
-
-    else if (
-        selectedPeriod === "month" ||
-        (selectedPeriod === "custom" && duration > 31)
-    ) {
-
-        grouping = "week";
-
-    }
-
-    items.forEach(item => {
-
-        const date = parseDate(item.expense_date);
-
-        let key;
-
-        if (grouping === "month") {
-
-            key = `${date.getFullYear()}-${String(
-                date.getMonth() + 1
-            ).padStart(2, "0")}`;
-
-        }
-
-        else if (grouping === "week") {
-
-            const monday = addDays(
-                date,
-                date.getDay() === 0 ? -6 : 1 - date.getDay()
-            );
-
-            key = dateString(monday);
-
-        }
-
-        else {
-
-            key = dateString(date);
-
-        }
-
-        totals[key] =
-            (totals[key] || 0) +
-            Number(item.amount || 0);
-
-    });
-
-    const labels = Object.keys(totals).sort();
-
-    if (trendChart) {
-        trendChart.destroy();
-    }
-
-    trendChart = new Chart(ctx, {
-
-        type: "bar",
-
-        data: {
-
-            labels: labels,
-
-            datasets: [{
-
-                label:
-                    grouping === "day"
-                        ? "Daily Spending"
-                        : grouping === "week"
-                            ? "Weekly Spending"
-                            : "Monthly Spending",
-
-                data: labels.map(label => totals[label])
-
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            plugins: {
-
-                tooltip: {
-
-                    callbacks: {
-
-                        label: context => money(context.raw)
-
-                    }
-
-                }
-
-            },
-
-            scales: {
-
-                y: {
-
-                    beginAtZero: true,
-
-                    ticks: {
-
-                        callback: value => "₹" + value
-
-                    }
-
-                }
-
-            }
-
-        }
-
-    });
-
-}
-
-
-// ======================================
-// TOP SPENDING CATEGORIES
-// ======================================
-
-function updateTopCategories(items) {
-
-    const totals = {};
-
-    items.forEach(item => {
-
-        const category = item.category || "Other";
-
-        if (!totals[category]) {
-
-            totals[category] = {
-                amount: 0,
-                count: 0
-            };
-
-        }
-
-        totals[category].amount += Number(item.amount || 0);
-
-        totals[category].count++;
-
-    });
-
-    const total = getTotal(items);
-
-    const sorted = Object.entries(totals).sort(
-        (a, b) => b[1].amount - a[1].amount
-    );
-
-    const tbody = document.getElementById("topCategories");
-
-    tbody.innerHTML = "";
-
-    if (!sorted.length) {
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="4">No expenses in this period.</td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-    sorted.forEach(([category, data]) => {
-
-        const share = total
-            ? (data.amount / total) * 100
-            : 0;
-
-        const row = document.createElement("tr");
-
-        const values = [
-            category,
-            money(data.amount),
-            data.count,
-            `${share.toFixed(1)}%`
-        ];
-
-        values.forEach(value => {
-
-            const cell = document.createElement("td");
-
-            cell.textContent = value;
-
-            row.appendChild(cell);
-
-        });
-
-        tbody.appendChild(row);
-
-    });
-
-}
-
-
-// ======================================
-// SPENDING INSIGHTS
-// ======================================
-
-function updateInsights(items, total, previousTotal) {
-
-    const list = document.getElementById("spendingInsights");
-
-    list.innerHTML = "";
-
-    function addInsight(message) {
-
-        const li = document.createElement("li");
-
-        li.textContent = message;
-
-        list.appendChild(li);
-
-    }
-
-    if (!items.length) {
-
-        addInsight("No expenses found for this reporting period.");
-
-        return;
-
-    }
-
-    const categories = {};
-
-    items.forEach(item => {
-
-        const category = item.category || "Other";
-
-        categories[category] =
-            (categories[category] || 0) +
-            Number(item.amount || 0);
-
-    });
-
-    const topCategory = Object.entries(categories).sort(
-        (a, b) => b[1] - a[1]
-    )[0];
-
-    addInsight(
-        `Your highest spending category is ${topCategory[0]} (${money(topCategory[1])}).`
-    );
-
-    addInsight(
-        `You recorded ${items.length} transactions with total spending of ${money(total)}.`
-    );
-
-    if (previousTotal > 0) {
-
-        const change =
-            ((total - previousTotal) / previousTotal) * 100;
-
-        addInsight(
-            `Your spending is ${Math.abs(change).toFixed(1)}% ${
-                change > 0
-                    ? "higher"
-                    : change < 0
-                        ? "lower"
-                        : "unchanged"
-            } compared with the previous period.`
-        );
-
-    }
-
-    const average = total / items.length;
-
-    addInsight(
-        `Your average transaction amount is ${money(average)}.`
-    );
-
-}
-
-
-// ======================================
-// SAVE MONTHLY BUDGET
-// ======================================
-
-function saveBudget() {
-
-    const budget = Number(
-        document.getElementById("monthlyBudget").value
-    );
-
-    if (!Number.isFinite(budget) || budget <= 0) {
-
-        document.getElementById("budgetMessage").textContent =
-            "Please enter a valid budget greater than zero.";
-
-        return;
-
-    }
-
-    localStorage.setItem(
-        "monthly_expense_budget",
-        String(budget)
-    );
-
-    updateBudget();
-
-}
-
-
-// ======================================
-// UPDATE BUDGET INDICATOR
-// ======================================
-
-function updateBudget() {
-
-    const budget = Number(
-        localStorage.getItem("monthly_expense_budget") || 0
-    );
-
-    const now = new Date();
-
-    const monthStart = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        1
-    );
-
-    const monthEnd = new Date(
-        now.getFullYear(),
-        now.getMonth() + 1,
-        0
-    );
-
-    const currentMonthItems = getExpensesInRange(
-        monthStart,
-        monthEnd
-    );
-
-    const spent = getTotal(currentMonthItems);
-
-    document.getElementById("currentMonthSpending").textContent =
-        money(spent);
-
-    const percentageElement =
-        document.getElementById("budgetPercentage");
-
-    const gradeElement =
-        document.getElementById("budgetGrade");
-
-    const progress =
-        document.getElementById("budgetProgressBar");
-
-    const message =
-        document.getElementById("budgetMessage");
-
-    if (!budget) {
-
-        percentageElement.textContent = "Not set";
-
-        gradeElement.textContent = "-";
-
-        progress.style.width = "0%";
-
-        message.textContent =
-            "Set a monthly budget to activate the indicator.";
-
-        return;
-
-    }
-
-    const percentage = (spent / budget) * 100;
-
-    let grade;
-
-    let description;
-
-    if (percentage <= 60) {
-
-        grade = "A";
-
-        description = "Within 60% of your budget.";
-
-    }
-
-    else if (percentage <= 80) {
-
-        grade = "B";
-
-        description = "Your budget usage is between 61% and 80%.";
-
-    }
-
-    else if (percentage <= 100) {
-
-        grade = "C";
-
-        description = "You are within your monthly budget.";
-
-    }
-
-    else if (percentage <= 120) {
-
-        grade = "D";
-
-        description = "You are above your monthly budget.";
-
-    }
-
-    else {
-
-        grade = "E";
-
-        description =
-            "Your spending is significantly above your budget.";
-
-    }
-
-    percentageElement.textContent =
-        `${percentage.toFixed(1)}%`;
-
-    gradeElement.textContent = grade;
-
-    progress.style.width =
-        `${Math.min(percentage, 100)}%`;
-
-    message.textContent =
-        `${description} Budget: ${money(budget)}. Remaining: ${money(budget - spent)}.`;
-
-}
-
-
-// ======================================
-// CHECK PDF LIBRARIES
-// ======================================
-
-function checkPDFLibraries() {
-
-    console.log("========== PDF LIBRARY CHECK ==========");
-
-    console.log("jsPDF:", typeof window.jspdf);
-
-    console.log(
-        "jsPDF Constructor:",
-        typeof window.jspdf?.jsPDF
-    );
-
-    if (window.jspdf?.jsPDF) {
-
-        const testDoc = new window.jspdf.jsPDF();
-
-        console.log(
-            "AutoTable:",
-            typeof testDoc.autoTable
-        );
-
-    } else {
-
-        console.error("jsPDF library is unavailable.");
-
-    }
-
-    console.log("Chart.js:", typeof window.Chart);
-
-    console.log("=======================================");
-
 }
 
 
 // ======================================
 // GET LOGGED-IN USER INFORMATION
 // ======================================
-
 function getReportUserInfo() {
-
     try {
-
         const storedUser = localStorage.getItem("user");
-
-        if (!storedUser) {
-            return {};
-        }
+        if (!storedUser) return {};
 
         const user = typeof storedUser === "string"
             ? JSON.parse(storedUser)
@@ -1290,588 +29,377 @@ function getReportUserInfo() {
             email: user.email || "Not available",
             userId: user.user_id || user.id || "Not available"
         };
-
     }
-
     catch (error) {
-
         console.error("Unable to read user information:", error);
-
         return {};
-
     }
-
 }
+
+
+// ======================================
+// DRAW PDF HEADER BAR
+// ======================================
+function drawPdfHeader(doc, pageWidth) {
+    // Dark blue banner
+    doc.setFillColor(36, 52, 71);          // #243447
+    doc.rect(0, 0, pageWidth, 32, "F");
+
+    // App name (left)
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Daily Expense Tracker", 14, 14);
+
+    // Subtitle (left, below)
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(213, 220, 227);
+    doc.text("Expense Report", 14, 22);
+
+    // Generated date (right, aligned)
+    doc.setFontSize(9);
+    doc.setTextColor(213, 220, 227);
+    doc.text(
+        `Generated: ${dateString(new Date())}`,
+        pageWidth - 14,
+        14,
+        { align: "right" }
+    );
+
+    // Reset text color for body
+    doc.setTextColor(0, 0, 0);
+}
+
+
+// ======================================
+// DRAW SECTION TITLE
+// ======================================
+function drawSectionTitle(doc, title, y) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(36, 52, 71);
+    doc.text(title, 14, y);
+    doc.setTextColor(0, 0, 0);
+
+    // Thin underline
+    doc.setDrawColor(37, 99, 235);
+    doc.setLineWidth(0.5);
+    doc.line(14, y + 2, 60, y + 2);
+}
+
 
 // ======================================
 // DOWNLOAD PDF REPORT
 // ======================================
-
 function downloadPDFReport() {
 
     try {
-
-        // Check jsPDF
-
-        if (
-            !window.jspdf ||
-            !window.jspdf.jsPDF
-        ) {
-
-            alert(
-                "jsPDF library failed to load. Please check your internet connection and refresh the page."
-            );
-
-            console.error(
-                "jsPDF library is unavailable:",
-                window.jspdf
-            );
-
+        // ---- Library checks ----
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("jsPDF library failed to load. Please check your internet connection and refresh the page.");
             return;
-
         }
 
         const { jsPDF } = window.jspdf;
-
-        const doc = new jsPDF();
-
-
-        // Check AutoTable
+        const doc = new jsPDF({ unit: "mm", format: "a4" });
 
         if (typeof doc.autoTable !== "function") {
-
-            alert(
-                "PDF table plugin failed to load. Please refresh the page."
-            );
-
-            console.error(
-                "AutoTable plugin is unavailable."
-            );
-
+            alert("PDF table plugin failed to load. Please refresh the page.");
             return;
-
         }
 
-
-        // Validate reporting period
-
+        // ---- Period check ----
         if (!startDate || !endDate) {
-
             alert("Please select a reporting period first.");
-
             return;
-
         }
 
-
-        // Get selected-period expenses
-
-        const items = getExpensesInRange(
-            startDate,
-            endDate
-        );
-
+        const items = getExpensesInRange(startDate, endDate);
         if (!items.length) {
-
-            alert(
-                "No expenses found for the selected period."
-            );
-
+            alert("No expenses found for the selected period.");
             return;
-
         }
 
-
+        // ---- Compute stats ----
         const total = getTotal(items);
-
         const average = total / items.length;
 
-
-        // Highest expense
-
-        const highest = items.reduce((max, item) => {
-
-            return Number(item.amount || 0) >
-                Number(max?.amount || 0)
-                ? item
-                : max;
-
-        }, null);
-
-
-        const previousTotal = getTotal(
-            getPreviousRangeExpenses()
+        const highest = items.reduce((max, item) =>
+            Number(item.amount || 0) > Number(max?.amount || 0) ? item : max,
+            null
         );
 
+        const previousTotal = getTotal(getPreviousRangeExpenses());
 
         let comparison = "No previous-period spending";
-
         if (previousTotal > 0) {
-
-            const change =
-                ((total - previousTotal) / previousTotal) * 100;
-
+            const change = ((total - previousTotal) / previousTotal) * 100;
             comparison =
-                `${Math.abs(change).toFixed(1)}% ${
-                    change > 0
-                        ? "higher"
-                        : change < 0
-                            ? "lower"
-                            : "unchanged"
-                }`;
-
+                `${Math.abs(change).toFixed(1)}% ` +
+                (change > 0 ? "higher" : change < 0 ? "lower" : "unchanged");
         }
 
+        const userInfo = getReportUserInfo();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 14;
 
         // ======================================
-        // PDF HEADER
+        // HEADER
         // ======================================
+        drawPdfHeader(doc, pageWidth);
 
-        // ======================================
-// PDF HEADER
-// ======================================
-
-const userInfo = getReportUserInfo();
-
-doc.setFont("helvetica", "bold");
-doc.setFontSize(20);
-
-doc.text("Daily Expense Tracker", 14, 20);
-
-doc.setFontSize(15);
-doc.text("Expense Report", 14, 30);
-
-
-// Report information
-doc.setFont("helvetica", "normal");
-doc.setFontSize(10);
-
-doc.text(
-    `Report Period: ${dateString(startDate)} to ${dateString(endDate)}`,
-    14,
-    40
-);
-
-doc.text(
-    `Generated On: ${dateString(new Date())}`,
-    14,
-    47
-);
-
-
-// User information
-doc.setFont("helvetica", "bold");
-doc.setFontSize(12);
-
-doc.text("User Information", 14, 60);
-
-doc.setFont("helvetica", "normal");
-doc.setFontSize(10);
-
-doc.text(
-    `Full Name: ${userInfo.fullName || "Not available"}`,
-    14,
-    68
-);
-
-doc.text(
-    `Username: ${userInfo.username || "Not available"}`,
-    14,
-    75
-);
-
-doc.text(
-    `Email: ${userInfo.email || "Not available"}`,
-    14,
-    82
-);
-
-doc.text(
-    `User ID: ${String(userInfo.userId || "Not available")}`,
-    14,
-    89
-);
-
-
-// ======================================
-// EXPENSE SUMMARY
-// ======================================
-
-doc.setFontSize(13);
-doc.setFont("helvetica", "bold");
-
-doc.text("Expense Summary", 14, 103);
-
-doc.autoTable({
-
-    startY: 108,
-
-    head: [
-        ["Metric", "Value"]
-    ],
-
-    body: [
-        ["Total Spending", `INR ${total.toFixed(2)}`],
-        ["Number of Transactions", String(items.length)],
-        ["Average Expense", `INR ${average.toFixed(2)}`],
-        [
-            "Highest Expense",
-            `INR ${Number(highest.amount).toFixed(2)}`
-        ],
-        [
-            "Highest Expense Date",
-            String(highest.expense_date).slice(0, 10)
-        ],
-        ["Previous Period Comparison", comparison]
-    ],
-
-    theme: "grid",
-
-    headStyles: {
-        fillColor: [37, 99, 235]
-    },
-
-    styles: {
-        fontSize: 9
-    }
-
-});
+        let y = 42;
 
         // ======================================
-        // CATEGORY-WISE REPORT
+        // REPORT + USER INFO (2 COLUMNS)
         // ======================================
+        drawSectionTitle(doc, "Report Information", y);
+        y += 7;
 
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+
+        // Left column: report period
+        doc.setFont("helvetica", "bold");
+        doc.text("Report Period:", margin, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            `${dateString(startDate)}  to  ${dateString(endDate)}`,
+            margin + 32,
+            y
+        );
+
+        // Right column: user name
+        doc.setFont("helvetica", "bold");
+        doc.text("User:", pageWidth / 2 + 5, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            String(userInfo.fullName || "Not available"),
+            pageWidth / 2 + 22,
+            y
+        );
+
+        y += 7;
+
+        // Row 2: transactions + username
+        doc.setFont("helvetica", "bold");
+        doc.text("Transactions:", margin, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(String(items.length), margin + 32, y);
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Username:", pageWidth / 2 + 5, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            String(userInfo.username || "Not available"),
+            pageWidth / 2 + 22,
+            y
+        );
+
+        y += 7;
+
+        // Row 3: total spending + email
+        doc.setFont("helvetica", "bold");
+        doc.text("Total Spending:", margin, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(pdfMoney(total), margin + 32, y);
+
+        doc.setFont("helvetica", "bold");
+        doc.text("Email:", pageWidth / 2 + 5, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            String(userInfo.email || "Not available"),
+            pageWidth / 2 + 22,
+            y
+        );
+
+        y += 12;
+
+        // ======================================
+        // EXPENSE SUMMARY TABLE
+        // ======================================
+        drawSectionTitle(doc, "Expense Summary", y);
+        y += 5;
+
+        doc.autoTable({
+            startY: y,
+            head: [["Metric", "Value"]],
+            body: [
+                ["Total Spending",              pdfMoney(total)],
+                ["Number of Transactions",      String(items.length)],
+                ["Average Expense",             pdfMoney(average)],
+                ["Highest Expense",             pdfMoney(highest?.amount || 0)],
+                ["Highest Expense Date",        highest ? String(highest.expense_date).slice(0, 10) : "No records"],
+                ["Previous Period Comparison",  comparison]
+            ],
+            theme: "grid",
+            headStyles: {
+                fillColor: [37, 99, 235],
+                textColor: 255,
+                fontStyle: "bold",
+                halign: "left"
+            },
+            styles: {
+                fontSize: 9,
+                cellPadding: 3,
+                valign: "middle"
+            },
+            columnStyles: {
+                0: { cellWidth: 70, fontStyle: "bold" },
+                1: { cellWidth: "auto", halign: "right" }
+            },
+            margin: { left: margin, right: margin }
+        });
+
+        y = doc.lastAutoTable.finalY + 12;
+
+        // ======================================
+        // CATEGORY-WISE SPENDING
+        // ======================================
         const categoryTotals = {};
-
-        items.forEach(expense => {
-
-            const category = expense.category || "Other";
-
-            categoryTotals[category] =
-                (categoryTotals[category] || 0) +
-                Number(expense.amount || 0);
-
+        items.forEach(exp => {
+            const cat = exp.category || "Other";
+            categoryTotals[cat] = (categoryTotals[cat] || 0) + Number(exp.amount || 0);
         });
 
         const categoryRows = Object.entries(categoryTotals)
-
             .sort((a, b) => b[1] - a[1])
+            .map(([cat, amount]) => [
+                cat,
+                pdfMoney(amount),
+                total > 0 ? `${((amount / total) * 100).toFixed(1)}%` : "0.0%"
+            ]);
 
-            .map(([category, amount]) => {
+        if (y > pageHeight - 40) { doc.addPage(); y = 20; }
 
-                const percentage = total > 0
-                    ? (amount / total) * 100
-                    : 0;
-
-                return [
-                    category,
-                    `INR ${amount.toFixed(2)}`,
-                    `${percentage.toFixed(1)}%`
-                ];
-
-            });
-
-
-        let nextY = doc.lastAutoTable.finalY + 12;
-
-        if (nextY > 250) {
-
-            doc.addPage();
-
-            nextY = 20;
-
-        }
-
-        doc.setFontSize(13);
-
-        doc.setFont("helvetica", "bold");
-
-        doc.text("Category-wise Spending", 14, nextY);
+        drawSectionTitle(doc, "Category-wise Spending", y);
+        y += 5;
 
         doc.autoTable({
-
-            startY: nextY + 5,
-
-            head: [
-                ["Category", "Amount", "Percentage"]
-            ],
-
+            startY: y,
+            head: [["Category", "Amount", "Share"]],
             body: categoryRows,
-
             theme: "striped",
-
             headStyles: {
-                fillColor: [37, 99, 235]
+                fillColor: [37, 99, 235],
+                textColor: 255,
+                fontStyle: "bold",
+                halign: "left"
             },
-
             styles: {
-                fontSize: 9
-            }
-
+                fontSize: 9,
+                cellPadding: 3
+            },
+            columnStyles: {
+                0: { cellWidth: 70 },
+                1: { cellWidth: "auto", halign: "right" },
+                2: { cellWidth: 30,   halign: "right" }
+            },
+            margin: { left: margin, right: margin }
         });
 
+        y = doc.lastAutoTable.finalY + 12;
 
         // ======================================
         // TRANSACTION DETAILS
         // ======================================
-
-        nextY = doc.lastAutoTable.finalY + 12;
-
-        if (nextY > 250) {
-
-            doc.addPage();
-
-            nextY = 20;
-
-        }
-
-        doc.setFontSize(13);
-
-        doc.setFont("helvetica", "bold");
-
-        doc.text(
-            "Expense Transaction Details",
-            14,
-            nextY
-        );
-
-
         const transactionRows = [...items]
-
             .sort((a, b) =>
-                String(a.expense_date).localeCompare(
-                    String(b.expense_date)
-                )
+                String(a.expense_date).localeCompare(String(b.expense_date))
             )
-
-            .map(expense => [
-
-                String(expense.expense_date).slice(0, 10),
-
-                expense.category || "Other",
-
-                expense.description || "-",
-
-                `INR ${Number(expense.amount || 0).toFixed(2)}`
-
+            .map(exp => [
+                String(exp.expense_date || "").slice(0, 10),
+                exp.category || "Other",
+                exp.description || "-",
+                pdfMoney(exp.amount)
             ]);
 
+        if (y > pageHeight - 40) { doc.addPage(); y = 20; }
+
+        drawSectionTitle(doc, "Expense Transaction Details", y);
+        y += 5;
 
         doc.autoTable({
-
-            startY: nextY + 5,
-
-            head: [
-                ["Date", "Category", "Description", "Amount"]
-            ],
-
+            startY: y,
+            head: [["Date", "Category", "Description", "Amount"]],
             body: transactionRows,
-
             theme: "striped",
-
             headStyles: {
-                fillColor: [37, 99, 235]
+                fillColor: [37, 99, 235],
+                textColor: 255,
+                fontStyle: "bold",
+                halign: "left"
             },
-
             styles: {
                 fontSize: 8,
-                overflow: "linebreak"
+                cellPadding: 2.5,
+                overflow: "linebreak",
+                valign: "top"
             },
-
             columnStyles: {
-
-                2: {
-                    cellWidth: 65
-                }
-
+                0: { cellWidth: 25 },                 // Date
+                1: { cellWidth: 30 },                 // Category
+                2: { cellWidth: "auto" },             // Description (flex)
+                3: { cellWidth: 30, halign: "right" } // Amount (right-aligned)
+            },
+            margin: { left: margin, right: margin },
+            didDrawPage: function () {
+                // Re-draw header on every new page
+                drawPdfHeader(doc, pageWidth);
             }
-
         });
 
-
         // ======================================
-        // PDF FOOTER
+        // FOOTER ON EVERY PAGE
         // ======================================
-
         const pageCount = doc.internal.getNumberOfPages();
 
-        for (
-            let page = 1;
-            page <= pageCount;
-            page++
-        ) {
-
+        for (let page = 1; page <= pageCount; page++) {
             doc.setPage(page);
 
+            // Line above footer
+            doc.setDrawColor(220, 224, 230);
+            doc.setLineWidth(0.3);
+            doc.line(margin, pageHeight - 14, pageWidth - margin, pageHeight - 14);
+
             doc.setFont("helvetica", "normal");
-
             doc.setFontSize(8);
+            doc.setTextColor(119, 119, 119);
 
+            // Left: app name
+            doc.text("Daily Expense Tracker", margin, pageHeight - 8);
+
+            // Center: period
             doc.text(
-                `Daily Expense Tracker | Page ${page} of ${pageCount}`,
-                14,
-                doc.internal.pageSize.height - 8
+                `${dateString(startDate)} to ${dateString(endDate)}`,
+                pageWidth / 2,
+                pageHeight - 8,
+                { align: "center" }
             );
 
+            // Right: page number
+            doc.text(
+                `Page ${page} of ${pageCount}`,
+                pageWidth - margin,
+                pageHeight - 8,
+                { align: "right" }
+            );
         }
 
-
         // ======================================
-        // SAVE PDF
+        // SAVE
         // ======================================
-
         const fileName =
             `Expense_Report_${dateString(startDate)}_to_${dateString(endDate)}.pdf`;
 
         doc.save(fileName);
-
-        console.log(
-            "PDF download started successfully:",
-            fileName
-        );
+        console.log("PDF download started:", fileName);
 
     }
-
     catch (error) {
-
-        console.error(
-            "PDF generation error:",
-            error
-        );
-
-        alert(
-            "Unable to generate PDF. Open browser F12 Console and check the error."
-        );
-
+        console.error("PDF generation error:", error);
+        alert("Unable to generate PDF. Open browser F12 Console and check the error.");
     }
-
 }
-
-
-// ======================================
-// LOAD REPORT DATA
-// ======================================
-
-async function loadReports() {
-
-    if (!token) {
-        return;
-    }
-
-    try {
-
-        showMessage("Loading report data...");
-
-        const response = await fetch(
-            "/api/expenses",
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
-        );
-
-        const data = await response.json();
-
-
-        // Authentication check
-
-        if (response.status === 401) {
-
-            localStorage.removeItem("access_token");
-
-            localStorage.removeItem("user");
-
-            window.location.href = "/login";
-
-            return;
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.message || "Unable to load expenses."
-            );
-
-        }
-
-
-        // API response
-
-        allExpenses = Array.isArray(data)
-            ? data
-            : (
-                data.expenses ||
-                data.data ||
-                []
-            );
-
-        if (!Array.isArray(allExpenses)) {
-
-            throw new Error(
-                "Unexpected API response format."
-            );
-
-        }
-
-
-        // Load saved monthly budget
-
-        const savedBudget = localStorage.getItem(
-            "monthly_expense_budget"
-        );
-
-        if (savedBudget) {
-
-            document.getElementById("monthlyBudget").value =
-                savedBudget;
-
-        }
-
-
-        // Default period: This Week
-
-        const range = getPeriodRange("week");
-
-        startDate = range.start;
-
-        endDate = range.end;
-
-        renderReport();
-
-        showMessage("Reports loaded successfully.");
-
-    }
-
-    catch (error) {
-
-        showMessage(error.message, true);
-
-        console.error(
-            "Report loading error:",
-            error
-        );
-
-    }
-
-}
-
-
-// ======================================
-// INITIALIZE REPORTS PAGE
-// ======================================
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    checkPDFLibraries();
-
-    loadReports();
-
-});
-
-</script>
-
-{% endblock %}

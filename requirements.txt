@@ -6,3 +6,4 @@ psycopg2
 Werkzeug
 Flask-JWT-Extended
 requests
+gunicorn

@@ -34,6 +34,13 @@ def dashboard_page():
 def add_expense_page():
     return render_template("add_expense.html")
 
+@app.route("/edit-expense/<int:expense_id>")
+def edit_expense_page(expense_id):
+    return render_template(
+        "edit_expense.html",
+        expense_id=expense_id
+    )
+
 @app.route("/")
 def home():
      return render_template("home.html")

@@ -198,7 +198,8 @@ function displayExpenses() {
         const editButton = document.createElement("button");
         editButton.textContent = "Edit";
         editButton.className = "btn-edit";
-        editButton.addEventListener("click", () => editExpense(expense));
+        editButton.addEventListener("click", () =>  {
+    window.location.href = `/edit-expense/${expense.expense_id}`;});
 
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "Delete";
@@ -211,60 +212,6 @@ function displayExpenses() {
         row.appendChild(actionCell);
         tableBody.appendChild(row);
     });
-}
-
-async function editExpense(expense) {
-
-    const category = prompt("Enter category:", expense.category);
-    if (category === null) return;
-
-    const description = prompt(
-        "Enter description:",
-        expense.description || ""
-    );
-    if (description === null) return;
-
-    const amount = prompt("Enter amount:", expense.amount);
-    if (amount === null) return;
-
-    const expenseDate = prompt(
-        "Enter expense date (YYYY-MM-DD):",
-        expense.expense_date
-    );
-    if (expenseDate === null) return;
-
-    const updatedExpense = {
-        category: category.trim(),
-        description: description.trim(),
-        amount: amount.trim(),
-        expense_date: expenseDate.trim()
-    };
-
-    try {
-        const response = await fetch(
-            `/api/expenses/${expense.expense_id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(updatedExpense)
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Unable to update expense");
-        }
-
-        showMessage("Expense updated successfully.");
-        await loadExpenses();
-
-    } catch (error) {
-        showMessage(error.message, true);
-    }
 }
 
 async function deleteExpense(expenseId) {

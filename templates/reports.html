@@ -6,15 +6,22 @@
 {% block content %}
 <div class="reports-page">
 
-    <div class="reports-header">
-        <div>
-            <h2>Reports & Analytics</h2>
-            <p>Understand your spending patterns and track your expenses.</p>
-        </div>
+  <div class="reports-header">
+    <div>
+        <h2>Reports & Analytics</h2>
+        <p>Understand your spending patterns and track your expenses.</p>
+    </div>
+
+    <div class="report-actions">
+        <button class="btn-primary" onclick="downloadPDFReport()">
+            Download PDF Report
+        </button>
+
         <button class="btn-edit" onclick="window.location.href='/dashboard'">
             Back to Dashboard
         </button>
     </div>
+</div>
 
     <!-- Period filters -->
     <section class="report-panel">
@@ -164,6 +171,9 @@
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
 
 <script>
 const token = localStorage.getItem("access_token");
@@ -596,6 +606,173 @@ function updateBudget() {
 
     message.textContent =
         `${description} Budget: ${money(budget)}. Remaining: ${money(budget - spent)}.`;
+}
+
+function downloadPDFReport() {
+
+    if (!allExpenses.length) {
+        alert("No expense records available to generate a report.");
+        return;
+    }
+
+    if (!startDate || !endDate) {
+        alert("Please select a reporting period first.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const items = getExpensesInRange(startDate, endDate);
+
+    if (!items.length) {
+        alert("No expenses found for the selected period.");
+        return;
+    }
+
+    const total = getTotal(items);
+    const average = total / items.length;
+
+    const highest = items.reduce((max, item) =>
+        Number(item.amount) > Number(max?.amount || 0)
+            ? item
+            : max,
+        null
+    );
+
+    const previousTotal = getTotal(getPreviousRangeExpenses());
+
+    const comparison = previousTotal > 0
+        ? `${(((total - previousTotal) / previousTotal) * 100).toFixed(1)}% compared with previous period`
+        : "No previous-period spending available";
+
+    // PDF title
+    doc.setFontSize(20);
+    doc.text("Daily Expense Tracker", 14, 20);
+
+    doc.setFontSize(15);
+    doc.text("Expense Report", 14, 30);
+
+    doc.setFontSize(10);
+    doc.text(
+        `Report Period: ${dateString(startDate)} to ${dateString(endDate)}`,
+        14,
+        39
+    );
+
+    doc.text(
+        `Generated On: ${dateString(new Date())}`,
+        14,
+        45
+    );
+
+    // Summary section
+    doc.setFontSize(13);
+    doc.text("Expense Summary", 14, 57);
+
+    doc.autoTable({
+        startY: 62,
+        head: [["Metric", "Value"]],
+        body: [
+            ["Total Spending", `INR ${total.toFixed(2)}`],
+            ["Number of Transactions", String(items.length)],
+            ["Average Expense", `INR ${average.toFixed(2)}`],
+            ["Highest Expense", `INR ${Number(highest.amount).toFixed(2)}`],
+            ["Highest Expense Date", String(highest.expense_date).slice(0, 10)],
+            ["Previous Period Comparison", comparison]
+        ],
+        theme: "grid",
+        headStyles: {
+            fillColor: [37, 99, 235]
+        }
+    });
+
+    // Category breakdown
+    const categoryTotals = {};
+
+    items.forEach(expense => {
+        const category = expense.category || "Other";
+
+        categoryTotals[category] =
+            (categoryTotals[category] || 0) +
+            Number(expense.amount || 0);
+    });
+
+    const categoryRows = Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1])
+        .map(([category, amount]) => [
+            category,
+            `INR ${amount.toFixed(2)}`,
+            `${total ? ((amount / total) * 100).toFixed(1) : 0}%`
+        ]);
+
+    let nextY = doc.lastAutoTable.finalY + 12;
+
+    doc.setFontSize(13);
+    doc.text("Category-wise Spending", 14, nextY);
+
+    doc.autoTable({
+        startY: nextY + 5,
+        head: [["Category", "Amount", "Percentage"]],
+        body: categoryRows,
+        theme: "striped",
+        headStyles: {
+            fillColor: [37, 99, 235]
+        }
+    });
+
+    // Transaction details
+    nextY = doc.lastAutoTable.finalY + 12;
+
+    doc.setFontSize(13);
+    doc.text("Expense Transaction Details", 14, nextY);
+
+    const transactionRows = [...items]
+        .sort((a, b) =>
+            String(a.expense_date).localeCompare(String(b.expense_date))
+        )
+        .map(expense => [
+            String(expense.expense_date).slice(0, 10),
+            expense.category || "Other",
+            expense.description || "-",
+            `INR ${Number(expense.amount || 0).toFixed(2)}`
+        ]);
+
+    doc.autoTable({
+        startY: nextY + 5,
+        head: [["Date", "Category", "Description", "Amount"]],
+        body: transactionRows,
+        theme: "striped",
+        headStyles: {
+            fillColor: [37, 99, 235]
+        },
+        styles: {
+            fontSize: 8,
+            overflow: "linebreak"
+        },
+        columnStyles: {
+            2: { cellWidth: 65 }
+        }
+    });
+
+    // Footer on every page
+    const pageCount = doc.internal.getNumberOfPages();
+
+    for (let page = 1; page <= pageCount; page++) {
+        doc.setPage(page);
+
+        doc.setFontSize(8);
+        doc.text(
+            `Daily Expense Tracker | Page ${page} of ${pageCount}`,
+            14,
+            doc.internal.pageSize.height - 8
+        );
+    }
+
+    const fileName =
+        `Expense_Report_${dateString(startDate)}_to_${dateString(endDate)}.pdf`;
+
+    doc.save(fileName);
 }
 
 async function loadReports() {

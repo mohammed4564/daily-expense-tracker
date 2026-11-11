@@ -7,6 +7,7 @@
 
 <div class="dashboard">
 
+    <!-- Dashboard Header -->
     <div class="dashboard-header">
         <div>
             <h2>Expense Dashboard</h2>
@@ -19,6 +20,7 @@
         </button>
     </div>
 
+    <!-- Summary Cards -->
     <div class="summary-cards">
 
         <div class="summary-card">
@@ -27,18 +29,103 @@
         </div>
 
         <div class="summary-card">
-            <h3>Current Month</h3>
+            <h3>Selected Range Expenses</h3>
             <p id="monthlyExpenses">₹0.00</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Number of Expenses</h3>
+            <p id="expenseCount">0</p>
         </div>
 
     </div>
 
+    <!-- Date Filter -->
     <div class="table-card">
+
+        <h3>Filter Expenses by Date</h3>
+
+        <div class="date-filter">
+
+            <div class="form-group">
+                <label for="fromDate">From Date</label>
+                <input type="date" id="fromDate">
+            </div>
+
+            <div class="form-group">
+                <label for="toDate">To Date</label>
+                <input type="date" id="toDate">
+            </div>
+
+            <div class="filter-buttons">
+
+                <button type="button"
+                        class="btn-primary"
+                        onclick="applyDateFilter()">
+                    Apply Filter
+                </button>
+
+                <button type="button"
+                        class="btn-edit"
+                        onclick="clearDateFilter()">
+                    Clear
+                </button>
+
+            </div>
+
+        </div>
+
+        <p id="filterMessage" class="message"></p>
+
+    </div>
+
+    <!-- Reports and Analytics -->
+    <div class="report-section">
+
+        <div class="report-header">
+            <h2>Reports & Analytics</h2>
+            <p>Understand where your money is going.</p>
+        </div>
+
+        <div class="report-grid">
+
+            <!-- Category Pie Chart -->
+            <div class="report-card">
+                <h3>Expense by Category</h3>
+                <p class="report-subtitle">
+                    Category-wise spending breakdown
+                </p>
+
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Date-wise Bar Chart -->
+            <div class="report-card">
+                <h3>Expense by Date</h3>
+                <p class="report-subtitle">
+                    Daily spending analysis
+                </p>
+
+                <div class="chart-container">
+                    <canvas id="dateChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Expense Table -->
+    <div class="table-card">
+
         <h3>Expense Records</h3>
 
         <p id="message" class="message"></p>
 
         <div class="table-responsive">
+
             <table>
                 <thead>
                     <tr>
@@ -55,16 +142,25 @@
                         <td colspan="5">Loading expenses...</td>
                     </tr>
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
 
 </div>
 
 {% endblock %}
 
+
 {% block scripts %}
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
+
 const token = localStorage.getItem("access_token");
 
 if (!token) {
@@ -72,25 +168,44 @@ if (!token) {
 }
 
 let expenses = [];
+let filteredExpenses = [];
 
+let categoryChart = null;
+let dateChart = null;
+
+
+// Format currency
 function formatAmount(amount) {
+
     return Number(amount || 0).toLocaleString("en-IN", {
         style: "currency",
         currency: "INR"
     });
+
 }
 
+
+// Show dashboard message
 function showMessage(message, isError = false) {
+
     const element = document.getElementById("message");
+
     element.textContent = message;
-    element.className = isError ? "message error" : "message success";
+
+    element.className = isError
+        ? "message error"
+        : "message success";
+
 }
 
+
+// Load expenses from API
 async function loadExpenses() {
 
     const tableBody = document.getElementById("expenseTableBody");
 
     try {
+
         const response = await fetch("/api/expenses", {
             method: "GET",
             headers: {
@@ -101,119 +216,423 @@ async function loadExpenses() {
         const data = await response.json();
 
         if (response.status === 401) {
+
             localStorage.removeItem("access_token");
             localStorage.removeItem("user");
+
             window.location.href = "/login";
             return;
         }
 
         if (!response.ok) {
-            throw new Error(data.message || "Unable to load expenses");
+            throw new Error(
+                data.message || "Unable to load expenses"
+            );
         }
 
-        // Supports common API response formats.
         expenses = Array.isArray(data)
             ? data
             : (data.expenses || data.data || []);
 
         if (!Array.isArray(expenses)) {
-            throw new Error("Unexpected expense API response format");
+            throw new Error("Unexpected API response format");
         }
 
-        updateSummary();
-        displayExpenses();
+        // Initially show all expenses
+        applyDateFilter();
 
     } catch (error) {
+
         tableBody.innerHTML =
             '<tr><td colspan="5">Unable to load expenses.</td></tr>';
 
         showMessage(error.message, true);
+
         console.error(error);
+
     }
+
 }
 
+
+// Apply date range filter
+function applyDateFilter() {
+
+    const fromDate = document.getElementById("fromDate").value;
+    const toDate = document.getElementById("toDate").value;
+
+    const filterMessage = document.getElementById("filterMessage");
+
+    if (fromDate && toDate && fromDate > toDate) {
+
+        filterMessage.textContent =
+            "From Date cannot be after To Date.";
+
+        filterMessage.className = "message error";
+
+        return;
+    }
+
+    filteredExpenses = expenses.filter(expense => {
+
+        const expenseDate =
+            String(expense.expense_date).slice(0, 10);
+
+        const afterStartDate =
+            !fromDate || expenseDate >= fromDate;
+
+        const beforeEndDate =
+            !toDate || expenseDate <= toDate;
+
+        return afterStartDate && beforeEndDate;
+
+    });
+
+    filterMessage.textContent =
+        `Showing ${filteredExpenses.length} expense records.`;
+
+    filterMessage.className = "message success";
+
+    updateSummary();
+
+    displayExpenses();
+
+    updateCharts();
+
+}
+
+
+// Clear date filter
+function clearDateFilter() {
+
+    document.getElementById("fromDate").value = "";
+
+    document.getElementById("toDate").value = "";
+
+    applyDateFilter();
+
+}
+
+
+// Update summary cards
 function updateSummary() {
 
     const total = expenses.reduce(
-        (sum, expense) => sum + Number(expense.amount || 0),
+        (sum, expense) =>
+            sum + Number(expense.amount || 0),
         0
     );
 
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-
-    const monthlyTotal = expenses.reduce((sum, expense) => {
-
-        const expenseDate = new Date(expense.expense_date + "T00:00:00");
-
-        if (
-            expenseDate.getMonth() === currentMonth &&
-            expenseDate.getFullYear() === currentYear
-        ) {
-            return sum + Number(expense.amount || 0);
-        }
-
-        return sum;
-
-    }, 0);
+    const selectedTotal = filteredExpenses.reduce(
+        (sum, expense) =>
+            sum + Number(expense.amount || 0),
+        0
+    );
 
     document.getElementById("totalExpenses").textContent =
         formatAmount(total);
 
     document.getElementById("monthlyExpenses").textContent =
-        formatAmount(monthlyTotal);
+        formatAmount(selectedTotal);
+
+    document.getElementById("expenseCount").textContent =
+        filteredExpenses.length;
+
 }
 
+
+// Display expense records
 function displayExpenses() {
 
-    const tableBody = document.getElementById("expenseTableBody");
+    const tableBody =
+        document.getElementById("expenseTableBody");
+
     tableBody.innerHTML = "";
 
-    if (expenses.length === 0) {
+    if (filteredExpenses.length === 0) {
+
         tableBody.innerHTML =
-            '<tr><td colspan="5">No expenses found. Add your first expense!</td></tr>';
+            '<tr><td colspan="5">No expenses found for selected dates.</td></tr>';
+
         return;
     }
 
-    expenses.forEach(expense => {
+    filteredExpenses.forEach(expense => {
 
         const row = document.createElement("tr");
 
         const values = [
-            expense.expense_date,
+            String(expense.expense_date).slice(0, 10),
             expense.category,
             expense.description || "-",
             formatAmount(expense.amount)
         ];
 
         values.forEach(value => {
+
             const cell = document.createElement("td");
+
             cell.textContent = value;
+
             row.appendChild(cell);
+
         });
 
         const actionCell = document.createElement("td");
 
+        // Edit button
         const editButton = document.createElement("button");
-        editButton.textContent = "Edit";
-        editButton.className = "btn-edit";
-        editButton.addEventListener("click", () =>  {
-    window.location.href = `/edit-expense/${expense.expense_id}`;});
 
+        editButton.textContent = "Edit";
+
+        editButton.className = "btn-edit";
+
+        editButton.addEventListener("click", () => {
+
+            window.location.href =
+                `/edit-expense/${expense.expense_id}`;
+
+        });
+
+
+        // Delete button
         const deleteButton = document.createElement("button");
+
         deleteButton.textContent = "Delete";
+
         deleteButton.className = "btn-delete";
-        deleteButton.addEventListener("click", () => deleteExpense(expense.expense_id));
+
+        deleteButton.addEventListener("click", () => {
+
+            deleteExpense(expense.expense_id);
+
+        });
 
         actionCell.appendChild(editButton);
+
         actionCell.appendChild(deleteButton);
 
         row.appendChild(actionCell);
+
         tableBody.appendChild(row);
+
     });
+
 }
 
+
+// Update both charts
+function updateCharts() {
+
+    updateCategoryChart();
+
+    updateDateChart();
+
+}
+
+
+// Pie Chart: Category-wise Expenses
+function updateCategoryChart() {
+
+    const categoryTotals = {};
+
+    filteredExpenses.forEach(expense => {
+
+        const category = expense.category;
+
+        const amount = Number(expense.amount || 0);
+
+        categoryTotals[category] =
+            (categoryTotals[category] || 0) + amount;
+
+    });
+
+    const labels = Object.keys(categoryTotals);
+
+    const values = Object.values(categoryTotals);
+
+    const ctx = document
+        .getElementById("categoryChart")
+        .getContext("2d");
+
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+
+    categoryChart = new Chart(ctx, {
+
+        type: "pie",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                data: values,
+
+                backgroundColor: [
+                    "#4e79a7",
+                    "#f28e2b",
+                    "#e15759",
+                    "#76b7b2",
+                    "#59a14f",
+                    "#edc949",
+                    "#af7aa1",
+                    "#ff9da7",
+                    "#9c755f",
+                    "#bab0ab"
+                ],
+
+                borderWidth: 1
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    position: "bottom"
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            return context.label + ": " +
+                                formatAmount(context.raw);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+
+// Bar Chart: Date-wise Expenses
+function updateDateChart() {
+
+    const dateTotals = {};
+
+    filteredExpenses.forEach(expense => {
+
+        const date =
+            String(expense.expense_date).slice(0, 10);
+
+        const amount = Number(expense.amount || 0);
+
+        dateTotals[date] =
+            (dateTotals[date] || 0) + amount;
+
+    });
+
+    const labels = Object.keys(dateTotals).sort();
+
+    const values = labels.map(date => dateTotals[date]);
+
+    const ctx = document
+        .getElementById("dateChart")
+        .getContext("2d");
+
+    if (dateChart) {
+        dateChart.destroy();
+    }
+
+    dateChart = new Chart(ctx, {
+
+        type: "bar",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                label: "Daily Expenses",
+
+                data: values,
+
+                backgroundColor: "#4e79a7",
+
+                borderRadius: 5
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        callback: function(value) {
+
+                            return "₹" + value;
+
+                        }
+
+                    }
+
+                }
+
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            return formatAmount(context.raw);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+
+// Delete expense
 async function deleteExpense(expenseId) {
 
     const confirmed = confirm(
@@ -223,10 +642,12 @@ async function deleteExpense(expenseId) {
     if (!confirmed) return;
 
     try {
+
         const response = await fetch(
             `/api/expenses/${expenseId}`,
             {
                 method: "DELETE",
+
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -235,18 +656,39 @@ async function deleteExpense(expenseId) {
 
         const data = await response.json();
 
+        if (response.status === 401) {
+
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user");
+
+            window.location.href = "/login";
+            return;
+        }
+
         if (!response.ok) {
-            throw new Error(data.message || "Unable to delete expense");
+
+            throw new Error(
+                data.message || "Unable to delete expense"
+            );
+
         }
 
         showMessage("Expense deleted successfully.");
+
         await loadExpenses();
 
     } catch (error) {
+
         showMessage(error.message, true);
+
     }
+
 }
 
+
+// Load dashboard
 loadExpenses();
+
 </script>
+
 {% endblock %}

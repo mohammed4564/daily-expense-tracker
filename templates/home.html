@@ -1,0 +1,154 @@
+
+{% extends "base.html" %}
+
+{% block title %}Home - Daily Expense Tracker{% endblock %}
+
+{% block content %}
+
+<div class="home-container">
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+
+        <div class="hero-content">
+
+            <span class="hero-tag">PERSONAL FINANCE MANAGEMENT</span>
+
+            <h1>
+                Manage Your Money.
+                <span>Track Your Expenses.</span>
+            </h1>
+
+            <p>
+                Take control of your daily spending with a simple and
+                smart expense tracker. Record expenses, monitor monthly
+                spending and understand where your money goes.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="{{ url_for('register_page') }}"
+                   class="home-btn primary-home-btn">
+                    Get Started
+                </a>
+
+                <a href="{{ url_for('login_page') }}"
+                   class="home-btn secondary-home-btn">
+                    Login
+                </a>
+            </div>
+
+        </div>
+
+        <div class="hero-image">
+            <div class="expense-preview">
+
+                <div class="preview-header">
+                    <h3>Expense Overview</h3>
+                    <span>Monthly</span>
+                </div>
+
+                <p class="preview-label">Total Expenses</p>
+                <h2>₹12,500.00</h2>
+
+                <div class="preview-divider"></div>
+
+                <div class="preview-row">
+                    <span>Food</span>
+                    <strong>₹3,000</strong>
+                </div>
+
+                <div class="preview-row">
+                    <span>Travel</span>
+                    <strong>₹2,500</strong>
+                </div>
+
+                <div class="preview-row">
+                    <span>Shopping</span>
+                    <strong>₹4,000</strong>
+                </div>
+
+                <div class="preview-row">
+                    <span>Bills</span>
+                    <strong>₹3,000</strong>
+                </div>
+
+                <div class="preview-footer">
+                    <span>Track every rupee!</span>
+                    <span>✓</span>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+
+        <div class="section-heading">
+            <h2>Everything You Need to Manage Expenses</h2>
+            <p>Simple tools to help you understand your spending.</p>
+        </div>
+
+        <div class="features-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Track Expenses</h3>
+                <p>
+                    Easily record your daily expenses with date,
+                    category, description and amount.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Expense Summary</h3>
+                <p>
+                    View your total expenses and current month's
+                    spending in one place.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>Manage Records</h3>
+                <p>
+                    Add, edit, view and delete your expense records
+                    whenever needed.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Secure Account</h3>
+                <p>
+                    Register and log in to manage your own
+                    personal expense records.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+
+        <h2>Start Managing Your Expenses Today!</h2>
+
+        <p>
+            Create your free account and take the first step
+            towards better expense management.
+        </p>
+
+        <a href="{{ url_for('register_page') }}"
+           class="home-btn primary-home-btn">
+            Create Your Account
+        </a>
+
+    </section>
+
+</div>
+
+{% endblock %}

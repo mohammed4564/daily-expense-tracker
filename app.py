@@ -34,6 +34,13 @@ def dashboard_page():
 def add_expense_page():
     return render_template("add_expense.html")
 
+@app.route("/")
+def home():
+    return jsonify({
+        "success": True,
+        "message": "Daily Expense Tracker API is running"
+    })
+
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 
 if not app.config["JWT_SECRET_KEY"]:
@@ -47,10 +54,12 @@ jwt = JWTManager(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(expense_bp)
 
+# =================================
+# API HEALTH CHECK
+# =================================
 
-@app.route("/")
-def home():
-
+@app.route("/health")
+def health_check():
     return jsonify({
         "success": True,
         "message": "Daily Expense Tracker API is running"

@@ -9,14 +9,12 @@
 
     <!-- Reports Header -->
     <div class="reports-header">
-
         <div>
             <h2>Reports & Analytics</h2>
             <p>Understand your spending patterns and track your expenses.</p>
         </div>
 
         <div class="report-actions">
-
             <button
                 type="button"
                 class="btn-primary"
@@ -30,19 +28,14 @@
                 onclick="window.location.href='/dashboard'">
                 Back to Dashboard
             </button>
-
         </div>
-
     </div>
-
 
     <!-- Period Filters -->
     <section class="report-panel">
-
         <h3>Select Reporting Period</h3>
 
         <div class="period-buttons">
-
             <button
                 type="button"
                 class="period-btn active"
@@ -74,13 +67,10 @@
                 onclick="selectPeriod('custom', this)">
                 Custom Range
             </button>
-
         </div>
-
 
         <!-- Custom Date Range -->
         <div id="customDates" class="custom-dates" style="display:none;">
-
             <div>
                 <label for="fromDate">From Date</label>
                 <input type="date" id="fromDate">
@@ -97,66 +87,40 @@
                 onclick="applyCustomRange()">
                 Apply
             </button>
-
         </div>
 
         <p id="periodLabel" class="report-muted"></p>
-
         <p id="reportMessage" role="status"></p>
-
     </section>
-
 
     <!-- Summary Cards -->
     <section class="report-summary">
 
         <div class="report-stat">
-
             <span>Total Spending</span>
-
             <h2 id="totalSpending">₹0.00</h2>
-
-            <small id="periodComparison">
-                Compared with previous period
-            </small>
-
+            <small id="periodComparison">Compared with previous period</small>
         </div>
 
-
         <div class="report-stat">
-
             <span>Transactions</span>
-
             <h2 id="transactionCount">0</h2>
-
             <small>Number of expenses</small>
-
         </div>
 
-
         <div class="report-stat">
-
             <span>Average Expense</span>
-
             <h2 id="averageExpense">₹0.00</h2>
-
             <small>Per transaction</small>
-
         </div>
 
-
         <div class="report-stat">
-
             <span>Highest Expense</span>
-
             <h2 id="highestExpense">₹0.00</h2>
-
             <small id="highestExpenseDate">No records</small>
-
         </div>
 
     </section>
-
 
     <!-- Monthly Budget Indicator -->
     <section class="report-panel">
@@ -168,7 +132,6 @@
         </p>
 
         <div class="budget-controls">
-
             <input
                 type="number"
                 id="monthlyBudget"
@@ -182,9 +145,7 @@
                 onclick="saveBudget()">
                 Save Budget
             </button>
-
         </div>
-
 
         <div class="budget-result">
 
@@ -205,7 +166,6 @@
 
         </div>
 
-
         <div class="budget-progress">
             <div id="budgetProgressBar"></div>
         </div>
@@ -214,12 +174,10 @@
 
     </section>
 
-
     <!-- Charts -->
     <section class="report-grid">
 
         <div class="report-panel">
-
             <h3>Category-wise Spending</h3>
 
             <p class="report-muted">
@@ -229,12 +187,9 @@
             <div class="report-chart">
                 <canvas id="categoryChart"></canvas>
             </div>
-
         </div>
 
-
         <div class="report-panel">
-
             <h3>Spending Trend</h3>
 
             <p class="report-muted">
@@ -244,11 +199,9 @@
             <div class="report-chart">
                 <canvas id="trendChart"></canvas>
             </div>
-
         </div>
 
     </section>
-
 
     <!-- Top Categories -->
     <section class="report-panel">
@@ -256,9 +209,7 @@
         <h3>Top Spending Categories</h3>
 
         <div class="table-responsive">
-
             <table>
-
                 <thead>
                     <tr>
                         <th>Category</th>
@@ -269,29 +220,22 @@
                 </thead>
 
                 <tbody id="topCategories">
-
                     <tr>
                         <td colspan="4">Loading report...</td>
                     </tr>
-
                 </tbody>
-
             </table>
-
         </div>
 
     </section>
 
-
     <!-- Spending Insights -->
     <section class="report-panel">
-
         <h3>Spending Insights</h3>
 
         <ul id="spendingInsights">
             <li>Loading insights...</li>
         </ul>
-
     </section>
 
 </div>
@@ -305,14 +249,23 @@
      EXTERNAL LIBRARIES
 ====================================== -->
 
-<!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<!-- jsPDF library -->
+<script
+    src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"
+    onerror="console.error('Failed to load jsPDF library');">
+</script>
 
-<!-- jsPDF AutoTable -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+<!-- jsPDF AutoTable plugin -->
+<script
+    src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"
+    onerror="console.error('Failed to load jsPDF AutoTable plugin');">
+</script>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js library -->
+<script
+    src="https://cdn.jsdelivr.net/npm/chart.js"
+    onerror="console.error('Failed to load Chart.js');">
+</script>
 
 
 <script>
@@ -365,13 +318,9 @@ function dateString(date) {
 
     const year = date.getFullYear();
 
-    const month = String(
-        date.getMonth() + 1
-    ).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
 
-    const day = String(
-        date.getDate()
-    ).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 
@@ -418,22 +367,19 @@ function getPeriodRange(period) {
     let start;
     let end;
 
-
     if (period === "week") {
 
         // Monday to Sunday
 
         const day = today.getDay();
 
-        const mondayOffset =
-            day === 0 ? -6 : 1 - day;
+        const mondayOffset = day === 0 ? -6 : 1 - day;
 
         start = addDays(today, mondayOffset);
 
         end = addDays(start, 6);
 
     }
-
 
     else if (period === "month") {
 
@@ -451,7 +397,6 @@ function getPeriodRange(period) {
 
     }
 
-
     else if (period === "year") {
 
         start = new Date(
@@ -468,11 +413,7 @@ function getPeriodRange(period) {
 
     }
 
-
-    return {
-        start,
-        end
-    };
+    return { start, end };
 
 }
 
@@ -485,25 +426,16 @@ function selectPeriod(period, button) {
 
     selectedPeriod = period;
 
-
-    document.querySelectorAll(".period-btn")
-        .forEach(btn => {
-
-            btn.classList.remove("active");
-
-        });
-
+    document.querySelectorAll(".period-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
 
     button.classList.add("active");
 
-
-    const customDates =
-        document.getElementById("customDates");
-
+    const customDates = document.getElementById("customDates");
 
     customDates.style.display =
         period === "custom" ? "flex" : "none";
-
 
     if (period !== "custom") {
 
@@ -526,36 +458,25 @@ function selectPeriod(period, button) {
 
 function applyCustomRange() {
 
-    const from =
-        document.getElementById("fromDate").value;
+    const from = document.getElementById("fromDate").value;
 
-    const to =
-        document.getElementById("toDate").value;
-
+    const to = document.getElementById("toDate").value;
 
     if (!from || !to) {
 
-        showMessage(
-            "Please select both dates.",
-            true
-        );
+        showMessage("Please select both dates.", true);
 
         return;
 
     }
-
 
     if (from > to) {
 
-        showMessage(
-            "From Date cannot be after To Date.",
-            true
-        );
+        showMessage("From Date cannot be after To Date.", true);
 
         return;
 
     }
-
 
     startDate = parseDate(from);
 
@@ -564,6 +485,8 @@ function applyCustomRange() {
     selectedPeriod = "custom";
 
     renderReport();
+
+    showMessage("Custom report generated successfully.");
 
 }
 
@@ -574,8 +497,9 @@ function applyCustomRange() {
 
 function showMessage(message, isError = false) {
 
-    const element =
-        document.getElementById("reportMessage");
+    const element = document.getElementById("reportMessage");
+
+    if (!element) return;
 
     element.textContent = message;
 
@@ -596,11 +520,9 @@ function getExpensesInRange(start, end) {
 
     const to = dateString(end);
 
-
     return allExpenses.filter(expense => {
 
-        const date =
-            String(expense.expense_date || "").slice(0, 10);
+        const date = String(expense.expense_date || "").slice(0, 10);
 
         return date >= from && date <= to;
 
@@ -615,17 +537,11 @@ function getExpensesInRange(start, end) {
 
 function getTotal(items) {
 
-    return items.reduce(
+    return items.reduce((sum, expense) => {
 
-        (sum, expense) => {
+        return sum + Number(expense.amount || 0);
 
-            return sum + Number(expense.amount || 0);
-
-        },
-
-        0
-
-    );
+    }, 0);
 
 }
 
@@ -636,27 +552,18 @@ function getTotal(items) {
 
 function getPreviousRangeExpenses() {
 
-    const duration =
-        Math.round(
-            (endDate - startDate) / 86400000
-        ) + 1;
+    const duration = Math.round(
+        (endDate - startDate) / 86400000
+    ) + 1;
 
+    const previousEnd = addDays(startDate, -1);
 
-    const previousEnd =
-        addDays(startDate, -1);
-
-
-    const previousStart =
-        addDays(
-            previousEnd,
-            -(duration - 1)
-        );
-
-
-    return getExpensesInRange(
-        previousStart,
-        previousEnd
+    const previousStart = addDays(
+        previousEnd,
+        -(duration - 1)
     );
+
+    return getExpensesInRange(previousStart, previousEnd);
 
 }
 
@@ -667,19 +574,13 @@ function getPreviousRangeExpenses() {
 
 function renderReport() {
 
-    if (!startDate || !endDate) {
-        return;
-    }
+    if (!startDate || !endDate) return;
 
-
-    const items =
-        getExpensesInRange(startDate, endDate);
-
+    const items = getExpensesInRange(startDate, endDate);
 
     const total = getTotal(items);
 
-    const previousTotal =
-        getTotal(getPreviousRangeExpenses());
+    const previousTotal = getTotal(getPreviousRangeExpenses());
 
 
     // Reporting period
@@ -703,27 +604,19 @@ function renderReport() {
     // Average expense
 
     document.getElementById("averageExpense").textContent =
-        money(
-            items.length ? total / items.length : 0
-        );
+        money(items.length ? total / items.length : 0);
 
 
     // Highest expense
 
-    const highest = items.reduce(
+    const highest = items.reduce((max, item) => {
 
-        (max, item) => {
+        return Number(item.amount || 0) >
+            Number(max?.amount || 0)
+            ? item
+            : max;
 
-            return Number(item.amount || 0) >
-                Number(max?.amount || 0)
-                ? item
-                : max;
-
-        },
-
-        null
-
-    );
+    }, null);
 
 
     document.getElementById("highestExpense").textContent =
@@ -740,12 +633,10 @@ function renderReport() {
 
     let comparison;
 
-
     if (previousTotal > 0) {
 
         const change =
             ((total - previousTotal) / previousTotal) * 100;
-
 
         comparison =
             `${Math.abs(change).toFixed(1)}% ${
@@ -760,18 +651,15 @@ function renderReport() {
 
     else if (total > 0) {
 
-        comparison =
-            "No expenses in previous period";
+        comparison = "No expenses in previous period";
 
     }
 
     else {
 
-        comparison =
-            "No expenses in either period";
+        comparison = "No expenses in either period";
 
     }
-
 
     document.getElementById("periodComparison").textContent =
         comparison;
@@ -798,39 +686,27 @@ function renderReport() {
 
 function updateCategoryChart(items) {
 
-    const canvas =
-        document.getElementById("categoryChart");
-
+    const canvas = document.getElementById("categoryChart");
 
     if (!canvas) {
-
         console.error("categoryChart canvas not found.");
-
         return;
-
     }
 
+    if (typeof window.Chart === "undefined") {
+        console.error("Chart.js library is not loaded.");
+        return;
+    }
 
     const ctx = canvas.getContext("2d");
 
-
-    if (!ctx) {
-
-        console.error("Unable to get category chart context.");
-
-        return;
-
-    }
-
+    if (!ctx) return;
 
     const totals = {};
 
-
     items.forEach(item => {
 
-        const category =
-            item.category || "Other";
-
+        const category = item.category || "Other";
 
         totals[category] =
             (totals[category] || 0) +
@@ -838,13 +714,9 @@ function updateCategoryChart(items) {
 
     });
 
-
     if (categoryChart) {
-
         categoryChart.destroy();
-
     }
-
 
     categoryChart = new Chart(ctx, {
 
@@ -855,11 +727,8 @@ function updateCategoryChart(items) {
             labels: Object.keys(totals),
 
             datasets: [{
-
                 label: "Category Spending",
-
                 data: Object.values(totals)
-
             }]
 
         },
@@ -877,9 +746,7 @@ function updateCategoryChart(items) {
                     callbacks: {
 
                         label: context => {
-
                             return `${context.label}: ${money(context.raw)}`;
-
                         }
 
                     }
@@ -901,49 +768,33 @@ function updateCategoryChart(items) {
 
 function updateTrendChart(items) {
 
-    const canvas =
-        document.getElementById("trendChart");
-
+    const canvas = document.getElementById("trendChart");
 
     if (!canvas) {
-
         console.error("trendChart canvas not found.");
-
         return;
-
     }
 
+    if (typeof window.Chart === "undefined") {
+        console.error("Chart.js library is not loaded.");
+        return;
+    }
 
     const ctx = canvas.getContext("2d");
 
-
-    if (!ctx) {
-
-        console.error("Unable to get trend chart context.");
-
-        return;
-
-    }
-
+    if (!ctx) return;
 
     const totals = {};
 
-
-    const duration =
-        Math.round(
-            (endDate - startDate) / 86400000
-        ) + 1;
-
+    const duration = Math.round(
+        (endDate - startDate) / 86400000
+    ) + 1;
 
     let grouping = "day";
 
-
     if (
         selectedPeriod === "year" ||
-        (
-            selectedPeriod === "custom" &&
-            duration > 90
-        )
+        (selectedPeriod === "custom" && duration > 90)
     ) {
 
         grouping = "month";
@@ -952,44 +803,32 @@ function updateTrendChart(items) {
 
     else if (
         selectedPeriod === "month" ||
-        (
-            selectedPeriod === "custom" &&
-            duration > 31
-        )
+        (selectedPeriod === "custom" && duration > 31)
     ) {
 
         grouping = "week";
 
     }
 
-
     items.forEach(item => {
 
-        const date =
-            parseDate(item.expense_date);
+        const date = parseDate(item.expense_date);
 
         let key;
 
-
         if (grouping === "month") {
 
-            key =
-                `${date.getFullYear()}-${String(
-                    date.getMonth() + 1
-                ).padStart(2, "0")}`;
+            key = `${date.getFullYear()}-${String(
+                date.getMonth() + 1
+            ).padStart(2, "0")}`;
 
         }
 
         else if (grouping === "week") {
 
             const monday = addDays(
-
                 date,
-
-                date.getDay() === 0
-                    ? -6
-                    : 1 - date.getDay()
-
+                date.getDay() === 0 ? -6 : 1 - date.getDay()
             );
 
             key = dateString(monday);
@@ -1002,24 +841,17 @@ function updateTrendChart(items) {
 
         }
 
-
         totals[key] =
             (totals[key] || 0) +
             Number(item.amount || 0);
 
     });
 
-
-    const labels =
-        Object.keys(totals).sort();
-
+    const labels = Object.keys(totals).sort();
 
     if (trendChart) {
-
         trendChart.destroy();
-
     }
-
 
     trendChart = new Chart(ctx, {
 
@@ -1056,8 +888,7 @@ function updateTrendChart(items) {
 
                     callbacks: {
 
-                        label: context =>
-                            money(context.raw)
+                        label: context => money(context.raw)
 
                     }
 
@@ -1073,8 +904,7 @@ function updateTrendChart(items) {
 
                     ticks: {
 
-                        callback: value =>
-                            "₹" + value
+                        callback: value => "₹" + value
 
                     }
 
@@ -1097,60 +927,40 @@ function updateTopCategories(items) {
 
     const totals = {};
 
-
     items.forEach(item => {
 
-        const category =
-            item.category || "Other";
-
+        const category = item.category || "Other";
 
         if (!totals[category]) {
 
             totals[category] = {
-
                 amount: 0,
-
                 count: 0
-
             };
 
         }
 
-
-        totals[category].amount +=
-            Number(item.amount || 0);
-
+        totals[category].amount += Number(item.amount || 0);
 
         totals[category].count++;
 
     });
 
-
     const total = getTotal(items);
 
+    const sorted = Object.entries(totals).sort(
+        (a, b) => b[1].amount - a[1].amount
+    );
 
-    const sorted = Object.entries(totals)
-
-        .sort(
-            (a, b) =>
-                b[1].amount - a[1].amount
-        );
-
-
-    const tbody =
-        document.getElementById("topCategories");
-
+    const tbody = document.getElementById("topCategories");
 
     tbody.innerHTML = "";
-
 
     if (!sorted.length) {
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="4">
-                    No expenses in this period.
-                </td>
+                <td colspan="4">No expenses in this period.</td>
             </tr>
         `;
 
@@ -1158,43 +968,30 @@ function updateTopCategories(items) {
 
     }
 
-
     sorted.forEach(([category, data]) => {
 
-        const share =
-            total
-                ? (data.amount / total) * 100
-                : 0;
+        const share = total
+            ? (data.amount / total) * 100
+            : 0;
 
-
-        const row =
-            document.createElement("tr");
-
+        const row = document.createElement("tr");
 
         const values = [
-
             category,
-
             money(data.amount),
-
             data.count,
-
             `${share.toFixed(1)}%`
-
         ];
-
 
         values.forEach(value => {
 
-            const cell =
-                document.createElement("td");
+            const cell = document.createElement("td");
 
             cell.textContent = value;
 
             row.appendChild(cell);
 
         });
-
 
         tbody.appendChild(row);
 
@@ -1209,17 +1006,13 @@ function updateTopCategories(items) {
 
 function updateInsights(items, total, previousTotal) {
 
-    const list =
-        document.getElementById("spendingInsights");
-
+    const list = document.getElementById("spendingInsights");
 
     list.innerHTML = "";
 
-
     function addInsight(message) {
 
-        const li =
-            document.createElement("li");
+        const li = document.createElement("li");
 
         li.textContent = message;
 
@@ -1227,26 +1020,19 @@ function updateInsights(items, total, previousTotal) {
 
     }
 
-
     if (!items.length) {
 
-        addInsight(
-            "No expenses found for this reporting period."
-        );
+        addInsight("No expenses found for this reporting period.");
 
         return;
 
     }
 
-
     const categories = {};
-
 
     items.forEach(item => {
 
-        const category =
-            item.category || "Other";
-
+        const category = item.category || "Other";
 
         categories[category] =
             (categories[category] || 0) +
@@ -1254,29 +1040,22 @@ function updateInsights(items, total, previousTotal) {
 
     });
 
-
-    const topCategory = Object.entries(categories)
-
-        .sort(
-            (a, b) => b[1] - a[1]
-        )[0];
-
+    const topCategory = Object.entries(categories).sort(
+        (a, b) => b[1] - a[1]
+    )[0];
 
     addInsight(
         `Your highest spending category is ${topCategory[0]} (${money(topCategory[1])}).`
     );
 
-
     addInsight(
         `You recorded ${items.length} transactions with total spending of ${money(total)}.`
     );
-
 
     if (previousTotal > 0) {
 
         const change =
             ((total - previousTotal) / previousTotal) * 100;
-
 
         addInsight(
             `Your spending is ${Math.abs(change).toFixed(1)}% ${
@@ -1290,10 +1069,7 @@ function updateInsights(items, total, previousTotal) {
 
     }
 
-
-    const average =
-        total / items.length;
-
+    const average = total / items.length;
 
     addInsight(
         `Your average transaction amount is ${money(average)}.`
@@ -1308,11 +1084,9 @@ function updateInsights(items, total, previousTotal) {
 
 function saveBudget() {
 
-    const budget =
-        Number(
-            document.getElementById("monthlyBudget").value
-        );
-
+    const budget = Number(
+        document.getElementById("monthlyBudget").value
+    );
 
     if (!Number.isFinite(budget) || budget <= 0) {
 
@@ -1323,12 +1097,10 @@ function saveBudget() {
 
     }
 
-
     localStorage.setItem(
         "monthly_expense_budget",
         String(budget)
     );
-
 
     updateBudget();
 
@@ -1342,69 +1114,44 @@ function saveBudget() {
 function updateBudget() {
 
     const budget = Number(
-
-        localStorage.getItem(
-            "monthly_expense_budget"
-        ) || 0
-
+        localStorage.getItem("monthly_expense_budget") || 0
     );
-
 
     const now = new Date();
 
-
     const monthStart = new Date(
-
         now.getFullYear(),
-
         now.getMonth(),
-
         1
-
     );
-
 
     const monthEnd = new Date(
-
         now.getFullYear(),
-
         now.getMonth() + 1,
-
         0
-
     );
 
+    const currentMonthItems = getExpensesInRange(
+        monthStart,
+        monthEnd
+    );
 
-    const currentMonthItems =
-        getExpensesInRange(
-            monthStart,
-            monthEnd
-        );
-
-
-    const spent =
-        getTotal(currentMonthItems);
-
+    const spent = getTotal(currentMonthItems);
 
     document.getElementById("currentMonthSpending").textContent =
         money(spent);
 
-
     const percentageElement =
         document.getElementById("budgetPercentage");
-
 
     const gradeElement =
         document.getElementById("budgetGrade");
 
-
     const progress =
         document.getElementById("budgetProgressBar");
 
-
     const message =
         document.getElementById("budgetMessage");
-
 
     if (!budget) {
 
@@ -1421,22 +1168,17 @@ function updateBudget() {
 
     }
 
-
-    const percentage =
-        (spent / budget) * 100;
-
+    const percentage = (spent / budget) * 100;
 
     let grade;
 
     let description;
 
-
     if (percentage <= 60) {
 
         grade = "A";
 
-        description =
-            "Within 60% of your budget.";
+        description = "Within 60% of your budget.";
 
     }
 
@@ -1444,8 +1186,7 @@ function updateBudget() {
 
         grade = "B";
 
-        description =
-            "Your budget usage is between 61% and 80%.";
+        description = "Your budget usage is between 61% and 80%.";
 
     }
 
@@ -1453,8 +1194,7 @@ function updateBudget() {
 
         grade = "C";
 
-        description =
-            "You are within your monthly budget.";
+        description = "You are within your monthly budget.";
 
     }
 
@@ -1462,8 +1202,7 @@ function updateBudget() {
 
         grade = "D";
 
-        description =
-            "You are above your monthly budget.";
+        description = "You are above your monthly budget.";
 
     }
 
@@ -1476,20 +1215,53 @@ function updateBudget() {
 
     }
 
-
     percentageElement.textContent =
         `${percentage.toFixed(1)}%`;
 
-
     gradeElement.textContent = grade;
-
 
     progress.style.width =
         `${Math.min(percentage, 100)}%`;
 
-
     message.textContent =
         `${description} Budget: ${money(budget)}. Remaining: ${money(budget - spent)}.`;
+
+}
+
+
+// ======================================
+// CHECK PDF LIBRARIES
+// ======================================
+
+function checkPDFLibraries() {
+
+    console.log("========== PDF LIBRARY CHECK ==========");
+
+    console.log("jsPDF:", typeof window.jspdf);
+
+    console.log(
+        "jsPDF Constructor:",
+        typeof window.jspdf?.jsPDF
+    );
+
+    if (window.jspdf?.jsPDF) {
+
+        const testDoc = new window.jspdf.jsPDF();
+
+        console.log(
+            "AutoTable:",
+            typeof testDoc.autoTable
+        );
+
+    } else {
+
+        console.error("jsPDF library is unavailable.");
+
+    }
+
+    console.log("Chart.js:", typeof window.Chart);
+
+    console.log("=======================================");
 
 }
 
@@ -1503,21 +1275,24 @@ function downloadPDFReport() {
     try {
 
         // Check jsPDF
+
         if (
             !window.jspdf ||
             !window.jspdf.jsPDF
         ) {
 
             alert(
-                "PDF library is not loaded. Check your internet connection and refresh the page."
+                "jsPDF library failed to load. Please check your internet connection and refresh the page."
             );
 
-            console.error("jsPDF library is unavailable.");
+            console.error(
+                "jsPDF library is unavailable:",
+                window.jspdf
+            );
 
             return;
 
         }
-
 
         const { jsPDF } = window.jspdf;
 
@@ -1525,14 +1300,15 @@ function downloadPDFReport() {
 
 
         // Check AutoTable
+
         if (typeof doc.autoTable !== "function") {
 
             alert(
-                "PDF table plugin is not loaded. Please refresh the page."
+                "PDF table plugin failed to load. Please refresh the page."
             );
 
             console.error(
-                "jsPDF AutoTable plugin is unavailable."
+                "AutoTable plugin is unavailable."
             );
 
             return;
@@ -1541,11 +1317,10 @@ function downloadPDFReport() {
 
 
         // Validate reporting period
+
         if (!startDate || !endDate) {
 
-            alert(
-                "Please select a reporting period first."
-            );
+            alert("Please select a reporting period first.");
 
             return;
 
@@ -1553,12 +1328,11 @@ function downloadPDFReport() {
 
 
         // Get selected-period expenses
-        const items =
-            getExpensesInRange(
-                startDate,
-                endDate
-            );
 
+        const items = getExpensesInRange(
+            startDate,
+            endDate
+        );
 
         if (!items.length) {
 
@@ -1571,44 +1345,34 @@ function downloadPDFReport() {
         }
 
 
-        const total =
-            getTotal(items);
+        const total = getTotal(items);
 
-
-        const average =
-            total / items.length;
+        const average = total / items.length;
 
 
         // Highest expense
-        const highest = items.reduce(
 
-            (max, item) => {
+        const highest = items.reduce((max, item) => {
 
-                return Number(item.amount || 0) >
-                    Number(max?.amount || 0)
-                    ? item
-                    : max;
+            return Number(item.amount || 0) >
+                Number(max?.amount || 0)
+                ? item
+                : max;
 
-            },
+        }, null);
 
-            null
 
+        const previousTotal = getTotal(
+            getPreviousRangeExpenses()
         );
 
 
-        const previousTotal =
-            getTotal(getPreviousRangeExpenses());
-
-
-        let comparison =
-            "No previous-period spending";
-
+        let comparison = "No previous-period spending";
 
         if (previousTotal > 0) {
 
             const change =
                 ((total - previousTotal) / previousTotal) * 100;
-
 
             comparison =
                 `${Math.abs(change).toFixed(1)}% ${
@@ -1630,33 +1394,21 @@ function downloadPDFReport() {
 
         doc.setFontSize(20);
 
-        doc.text(
-            "Daily Expense Tracker",
-            14,
-            20
-        );
-
+        doc.text("Daily Expense Tracker", 14, 20);
 
         doc.setFontSize(15);
 
-        doc.text(
-            "Expense Report",
-            14,
-            30
-        );
-
+        doc.text("Expense Report", 14, 30);
 
         doc.setFont("helvetica", "normal");
 
         doc.setFontSize(10);
-
 
         doc.text(
             `Report Period: ${dateString(startDate)} to ${dateString(endDate)}`,
             14,
             40
         );
-
 
         doc.text(
             `Generated On: ${dateString(new Date())}`,
@@ -1673,13 +1425,7 @@ function downloadPDFReport() {
 
         doc.setFont("helvetica", "bold");
 
-
-        doc.text(
-            "Expense Summary",
-            14,
-            60
-        );
-
+        doc.text("Expense Summary", 14, 60);
 
         doc.autoTable({
 
@@ -1691,20 +1437,11 @@ function downloadPDFReport() {
 
             body: [
 
-                [
-                    "Total Spending",
-                    `INR ${total.toFixed(2)}`
-                ],
+                ["Total Spending", `INR ${total.toFixed(2)}`],
 
-                [
-                    "Number of Transactions",
-                    String(items.length)
-                ],
+                ["Number of Transactions", String(items.length)],
 
-                [
-                    "Average Expense",
-                    `INR ${average.toFixed(2)}`
-                ],
+                ["Average Expense", `INR ${average.toFixed(2)}`],
 
                 [
                     "Highest Expense",
@@ -1716,10 +1453,7 @@ function downloadPDFReport() {
                     String(highest.expense_date).slice(0, 10)
                 ],
 
-                [
-                    "Previous Period Comparison",
-                    comparison
-                ]
+                ["Previous Period Comparison", comparison]
 
             ],
 
@@ -1742,12 +1476,9 @@ function downloadPDFReport() {
 
         const categoryTotals = {};
 
-
         items.forEach(expense => {
 
-            const category =
-                expense.category || "Other";
-
+            const category = expense.category || "Other";
 
             categoryTotals[category] =
                 (categoryTotals[category] || 0) +
@@ -1755,37 +1486,26 @@ function downloadPDFReport() {
 
         });
 
-
         const categoryRows = Object.entries(categoryTotals)
 
-            .sort(
-                (a, b) => b[1] - a[1]
-            )
+            .sort((a, b) => b[1] - a[1])
 
             .map(([category, amount]) => {
 
-                const percentage =
-                    total > 0
-                        ? (amount / total) * 100
-                        : 0;
-
+                const percentage = total > 0
+                    ? (amount / total) * 100
+                    : 0;
 
                 return [
-
                     category,
-
                     `INR ${amount.toFixed(2)}`,
-
                     `${percentage.toFixed(1)}%`
-
                 ];
 
             });
 
 
-        let nextY =
-            doc.lastAutoTable.finalY + 12;
-
+        let nextY = doc.lastAutoTable.finalY + 12;
 
         if (nextY > 250) {
 
@@ -1795,18 +1515,11 @@ function downloadPDFReport() {
 
         }
 
-
         doc.setFontSize(13);
 
         doc.setFont("helvetica", "bold");
 
-
-        doc.text(
-            "Category-wise Spending",
-            14,
-            nextY
-        );
-
+        doc.text("Category-wise Spending", 14, nextY);
 
         doc.autoTable({
 
@@ -1835,9 +1548,7 @@ function downloadPDFReport() {
         // TRANSACTION DETAILS
         // ======================================
 
-        nextY =
-            doc.lastAutoTable.finalY + 12;
-
+        nextY = doc.lastAutoTable.finalY + 12;
 
         if (nextY > 250) {
 
@@ -1847,11 +1558,9 @@ function downloadPDFReport() {
 
         }
 
-
         doc.setFontSize(13);
 
         doc.setFont("helvetica", "bold");
-
 
         doc.text(
             "Expense Transaction Details",
@@ -1863,11 +1572,9 @@ function downloadPDFReport() {
         const transactionRows = [...items]
 
             .sort((a, b) =>
-
                 String(a.expense_date).localeCompare(
                     String(b.expense_date)
                 )
-
             )
 
             .map(expense => [
@@ -1919,9 +1626,7 @@ function downloadPDFReport() {
         // PDF FOOTER
         // ======================================
 
-        const pageCount =
-            doc.internal.getNumberOfPages();
-
+        const pageCount = doc.internal.getNumberOfPages();
 
         for (
             let page = 1;
@@ -1935,15 +1640,10 @@ function downloadPDFReport() {
 
             doc.setFontSize(8);
 
-
             doc.text(
-
                 `Daily Expense Tracker | Page ${page} of ${pageCount}`,
-
                 14,
-
                 doc.internal.pageSize.height - 8
-
             );
 
         }
@@ -1956,15 +1656,12 @@ function downloadPDFReport() {
         const fileName =
             `Expense_Report_${dateString(startDate)}_to_${dateString(endDate)}.pdf`;
 
-
         doc.save(fileName);
 
-
         console.log(
-            "PDF downloaded successfully:",
+            "PDF download started successfully:",
             fileName
         );
-
 
     }
 
@@ -1975,9 +1672,8 @@ function downloadPDFReport() {
             error
         );
 
-
         alert(
-            "Unable to generate PDF. Open F12 Console and check the error."
+            "Unable to generate PDF. Open browser F12 Console and check the error."
         );
 
     }
@@ -1991,33 +1687,29 @@ function downloadPDFReport() {
 
 async function loadReports() {
 
+    if (!token) {
+        return;
+    }
+
     try {
 
         showMessage("Loading report data...");
 
-
         const response = await fetch(
             "/api/expenses",
-
             {
-
                 method: "GET",
-
                 headers: {
-
                     "Authorization": `Bearer ${token}`
-
                 }
-
             }
-
         );
-
 
         const data = await response.json();
 
 
         // Authentication check
+
         if (response.status === 401) {
 
             localStorage.removeItem("access_token");
@@ -2041,16 +1733,14 @@ async function loadReports() {
 
 
         // API response
+
         allExpenses = Array.isArray(data)
-
             ? data
-
             : (
                 data.expenses ||
                 data.data ||
                 []
             );
-
 
         if (!Array.isArray(allExpenses)) {
 
@@ -2062,11 +1752,10 @@ async function loadReports() {
 
 
         // Load saved monthly budget
-        const savedBudget =
-            localStorage.getItem(
-                "monthly_expense_budget"
-            );
 
+        const savedBudget = localStorage.getItem(
+            "monthly_expense_budget"
+        );
 
         if (savedBudget) {
 
@@ -2077,30 +1766,22 @@ async function loadReports() {
 
 
         // Default period: This Week
-        const range =
-            getPeriodRange("week");
 
+        const range = getPeriodRange("week");
 
         startDate = range.start;
 
         endDate = range.end;
 
-
         renderReport();
 
-
         showMessage("Reports loaded successfully.");
-
 
     }
 
     catch (error) {
 
-        showMessage(
-            error.message,
-            true
-        );
-
+        showMessage(error.message, true);
 
         console.error(
             "Report loading error:",
@@ -2116,7 +1797,13 @@ async function loadReports() {
 // INITIALIZE REPORTS PAGE
 // ======================================
 
-loadReports();
+document.addEventListener("DOMContentLoaded", function () {
+
+    checkPDFLibraries();
+
+    loadReports();
+
+});
 
 </script>
 

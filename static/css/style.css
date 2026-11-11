@@ -114,6 +114,8 @@ img, svg, canvas {
 .auth-card h2 {
     text-align: center;
     margin-bottom: 10px;
+    font-size: 24px;
+    color: #243447;
 }
 
 .subtitle {
@@ -144,12 +146,13 @@ img, svg, canvas {
     /* FIX: 16px prevents iOS auto-zoom on focus */
     font-size: 16px;
     background: white;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
     border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     outline: none;
 }
 
@@ -166,11 +169,21 @@ img, svg, canvas {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .btn-primary:hover {
     background: #1b5278;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .btn-edit,
@@ -182,13 +195,29 @@ img, svg, canvas {
     margin-right: 6px;
     margin-bottom: 4px;
     font-size: 14px;
-    transition: background 0.2s ease;
+    font-weight: 600;
+    transition: background 0.2s ease, opacity 0.2s ease;
 }
 
 .btn-edit { background: #2471a3; color: white; }
 .btn-delete { background: #d9534f; color: white; }
 .btn-edit:hover { background: #1b5278; }
 .btn-delete:hover { background: #b52b27; }
+
+.btn-delete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Anchors styled as primary buttons */
+a.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    line-height: 1.2;
+}
 
 /* ===============================
    AUTH LINKS & MESSAGES
@@ -201,6 +230,10 @@ img, svg, canvas {
 .auth-link a {
     color: #2471a3;
     text-decoration: none;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
 }
 
 .message {
@@ -318,6 +351,7 @@ th {
 
 /* ===============================
    DASHBOARD ACTION BUTTONS
+   (now supports both <button> and <a>)
 =============================== */
 .dashboard-actions {
     display: flex;
@@ -328,7 +362,8 @@ th {
     margin: 20px 0;
 }
 
-.dashboard-actions button {
+.dashboard-actions button,
+.dashboard-actions a.btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -340,17 +375,62 @@ th {
     color: #fff;
     font-size: 15px;
     font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.dashboard-actions button:hover {
+.dashboard-actions button:hover,
+.dashboard-actions a.btn-primary:hover {
     background: #1d4ed8;
     transform: translateY(-2px);
 }
 
-.dashboard-actions .add-btn { background: #16a34a; }
-.dashboard-actions .add-btn:hover { background: #15803d; }
+.dashboard-actions .add-btn,
+.dashboard-actions a.add-btn {
+    background: #16a34a;
+}
+
+.dashboard-actions .add-btn:hover,
+.dashboard-actions a.add-btn:hover {
+    background: #15803d;
+}
+
+/* ===============================
+   DASHBOARD DATE FILTER
+=============================== */
+.date-filter {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.date-filter .form-group {
+    flex: 1 1 180px;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.date-filter input { width: 100%; }
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-buttons .btn-primary {
+    width: auto;
+    min-width: 120px;
+    padding: 12px 20px;
+    font-size: 15px;
+}
 
 /* ===============================
    HOME PAGE
@@ -463,9 +543,13 @@ th {
     margin-bottom: 8px;
 }
 
+/* FIX: was .expense-preview h2 — now styles the <p> you actually use */
+.preview-total,
 .expense-preview h2 {
     font-size: 30px;
+    font-weight: bold;
     color: #2471a3;
+    line-height: 1.2;
     overflow-wrap: anywhere;
 }
 
@@ -522,13 +606,17 @@ th {
     padding: 25px 20px;
     border-radius: 10px;
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.feature-card:hover { transform: translateY(-5px); }
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
 
 .feature-icon {
     font-size: 32px;
+    line-height: 1;
     margin-bottom: 18px;
 }
 
@@ -563,6 +651,25 @@ th {
     color: #d5dce3;
     line-height: 1.7;
     margin-bottom: 25px;
+}
+
+/* CTA buttons wrapper */
+.cta-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cta-section .secondary-home-btn {
+    background: transparent;
+    color: #d5dce3;
+    border: 1px solid #d5dce3;
+}
+
+.cta-section .secondary-home-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
 }
 
 /* ===============================
@@ -604,7 +711,6 @@ th {
     margin-bottom: 10px;
 }
 
-/* Consolidated report-grid (was duplicated) */
 .report-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -636,29 +742,11 @@ th {
 }
 
 /* Date / period filters */
-.date-filter {
-    display: flex;
-    align-items: end;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin: 20px 0;
-}
-
 .date-filter .form-group {
-    flex: 1;
-    min-width: 180px;
+    flex: 1 1 180px;
+    min-width: 0;
     margin-bottom: 0;
 }
-
-.date-filter input { width: 100%; }
-
-.filter-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.filter-buttons button { cursor: pointer; }
 
 .period-buttons {
     display: flex;
@@ -675,6 +763,11 @@ th {
     cursor: pointer;
     font-size: 14px;
     transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.period-btn:hover {
+    border-color: #2563eb;
+    color: #2563eb;
 }
 
 .period-btn.active {
@@ -702,6 +795,14 @@ th {
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-dates input:focus,
+.budget-controls input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
 }
 
 /* Report summary stats */
@@ -779,6 +880,21 @@ th {
 .report-actions button { cursor: pointer; }
 
 /* ===============================
+   TOUCH DEVICES — disable sticky hover
+=============================== */
+@media (hover: none) {
+    .feature-card:hover {
+        transform: none;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-actions button:hover,
+    .dashboard-actions a.btn-primary:hover {
+        transform: none;
+    }
+}
+
+/* ===============================
    RESPONSIVE — TABLET (≤900px)
 =============================== */
 @media (max-width: 900px) {
@@ -844,7 +960,6 @@ th {
     .summary-card p { font-size: 22px; }
     .table-card { padding: 18px; }
 
-    /* Report charts get shorter on tablet */
     .chart-container,
     .report-chart { height: 280px; }
 }
@@ -874,6 +989,9 @@ th {
         padding: 22px;
     }
 
+    .preview-total,
+    .expense-preview h2 { font-size: 26px; }
+
     .features-section { padding: 35px 10px; }
 
     .section-heading h2 { font-size: 23px; }
@@ -893,7 +1011,15 @@ th {
 
     .cta-section h2 { font-size: 22px; }
     .cta-section p { font-size: 14px; }
-    .cta-section .home-btn { width: 100%; }
+
+    .cta-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cta-buttons .home-btn {
+        width: 100%;
+    }
 
     /* Dashboard */
     .dashboard-actions {
@@ -901,15 +1027,11 @@ th {
         gap: 10px;
     }
 
-    .dashboard-actions button {
+    .dashboard-actions button,
+    .dashboard-actions a.btn-primary {
         flex: 1 1 130px;
         min-width: 130px;
         padding: 11px 14px;
-    }
-
-    .dashboard-header {
-        align-items: flex-start;
-        flex-direction: column;
     }
 
     .summary-cards { grid-template-columns: 1fr; }
@@ -924,7 +1046,10 @@ th {
     .date-filter .form-group { width: 100%; }
 
     .filter-buttons { width: 100%; }
-    .filter-buttons button { flex: 1; }
+    .filter-buttons .btn-primary {
+        flex: 1;
+        width: 100%;
+    }
 
     .report-card { padding: 15px; }
 

@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}Home - Daily Expense Tracker{% endblock %}
@@ -7,14 +6,16 @@
 
 <div class="home-container">
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- =================================
+         HERO SECTION
+    ================================= -->
+    <section class="hero-section" aria-labelledby="hero-heading">
 
         <div class="hero-content">
 
             <span class="hero-tag">PERSONAL FINANCE MANAGEMENT</span>
 
-            <h1>
+            <h1 id="hero-heading">
                 Manage Your Money.
                 <span>Track Your Expenses.</span>
             </h1>
@@ -39,7 +40,8 @@
 
         </div>
 
-        <div class="hero-image">
+        <!-- Decorative preview card (not real data) -->
+        <div class="hero-image" aria-hidden="true">
             <div class="expense-preview">
 
                 <div class="preview-header">
@@ -48,7 +50,7 @@
                 </div>
 
                 <p class="preview-label">Total Expenses</p>
-                <h2>₹12,500.00</h2>
+                <p class="preview-total">₹12,500.00</p>
 
                 <div class="preview-divider"></div>
 
@@ -74,7 +76,7 @@
 
                 <div class="preview-footer">
                     <span>Track every rupee!</span>
-                    <span>✓</span>
+                    <span aria-hidden="true">✓</span>
                 </div>
 
             </div>
@@ -82,70 +84,83 @@
 
     </section>
 
-    <!-- Features Section -->
-    <section class="features-section">
+
+    <!-- =================================
+         FEATURES SECTION
+    ================================= -->
+    <section class="features-section" aria-labelledby="features-heading">
 
         <div class="section-heading">
-            <h2>Everything You Need to Manage Expenses</h2>
+            <h2 id="features-heading">Everything You Need to Manage Expenses</h2>
             <p>Simple tools to help you understand your spending.</p>
         </div>
 
         <div class="features-grid">
 
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
+            <article class="feature-card">
+                <div class="feature-icon" role="img" aria-label="Money bag">💰</div>
                 <h3>Track Expenses</h3>
                 <p>
                     Easily record your daily expenses with date,
                     category, description and amount.
                 </p>
-            </div>
+            </article>
 
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
+            <article class="feature-card">
+                <div class="feature-icon" role="img" aria-label="Bar chart">📊</div>
                 <h3>Expense Summary</h3>
                 <p>
                     View your total expenses and current month's
                     spending in one place.
                 </p>
-            </div>
+            </article>
 
-            <div class="feature-card">
-                <div class="feature-icon">📝</div>
+            <article class="feature-card">
+                <div class="feature-icon" role="img" aria-label="Memo">📝</div>
                 <h3>Manage Records</h3>
                 <p>
                     Add, edit, view and delete your expense records
                     whenever needed.
                 </p>
-            </div>
+            </article>
 
-            <div class="feature-card">
-                <div class="feature-icon">🔐</div>
+            <article class="feature-card">
+                <div class="feature-icon" role="img" aria-label="Lock">🔐</div>
                 <h3>Secure Account</h3>
                 <p>
                     Register and log in to manage your own
                     personal expense records.
                 </p>
-            </div>
+            </article>
 
         </div>
 
     </section>
 
-    <!-- Call to Action -->
-    <section class="cta-section">
 
-        <h2>Start Managing Your Expenses Today!</h2>
+    <!-- =================================
+         CALL TO ACTION
+    ================================= -->
+    <section class="cta-section" aria-labelledby="cta-heading">
+
+        <h2 id="cta-heading">Start Managing Your Expenses Today!</h2>
 
         <p>
             Create your free account and take the first step
             towards better expense management.
         </p>
 
-        <a href="{{ url_for('register_page') }}"
-           class="home-btn primary-home-btn">
-            Create Your Account
-        </a>
+        <div class="cta-buttons">
+            <a href="{{ url_for('register_page') }}"
+               class="home-btn primary-home-btn">
+                Create Your Account
+            </a>
+
+            <a href="{{ url_for('login_page') }}"
+               class="home-btn secondary-home-btn">
+                Already have an account?
+            </a>
+        </div>
 
     </section>
 

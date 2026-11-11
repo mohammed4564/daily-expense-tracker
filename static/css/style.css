@@ -1,3 +1,4 @@
+
 /* ===============================
    RESET & BASE
 =============================== */
@@ -30,7 +31,7 @@ img, svg, canvas {
     display: block;
 }
 
-/* Accessibility: visible focus for keyboard users */
+/* Accessibility */
 :focus-visible {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
@@ -143,7 +144,6 @@ img, svg, canvas {
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    /* FIX: 16px prevents iOS auto-zoom on focus */
     font-size: 16px;
     background: white;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -199,10 +199,23 @@ img, svg, canvas {
     transition: background 0.2s ease, opacity 0.2s ease;
 }
 
-.btn-edit { background: #2471a3; color: white; }
-.btn-delete { background: #d9534f; color: white; }
-.btn-edit:hover { background: #1b5278; }
-.btn-delete:hover { background: #b52b27; }
+.btn-edit {
+    background: #2471a3;
+    color: white;
+}
+
+.btn-delete {
+    background: #d9534f;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #1b5278;
+}
+
+.btn-delete:hover {
+    background: #b52b27;
+}
 
 .btn-delete:disabled {
     opacity: 0.6;
@@ -241,8 +254,13 @@ a.btn-primary {
     text-align: center;
 }
 
-.success { color: green; }
-.error { color: red; }
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}
 
 .footer {
     text-align: center;
@@ -269,8 +287,13 @@ a.btn-primary {
     margin-bottom: 25px;
 }
 
-.dashboard-header h2 { margin-bottom: 8px; }
-.dashboard-header p { color: #777; }
+.dashboard-header h2 {
+    margin-bottom: 8px;
+}
+
+.dashboard-header p {
+    color: #777;
+}
 
 .add-btn {
     width: auto;
@@ -314,13 +337,14 @@ a.btn-primary {
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
 }
 
-.table-card h3 { margin-bottom: 20px; }
+.table-card h3 {
+    margin-bottom: 20px;
+}
 
 .table-responsive {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    /* Visual hint that table scrolls horizontally */
     background:
         linear-gradient(to right, white 30%, rgba(255, 255, 255, 0)),
         linear-gradient(to right, rgba(255, 255, 255, 0), white 70%) 100% 0,
@@ -351,7 +375,6 @@ th {
 
 /* ===============================
    DASHBOARD ACTION BUTTONS
-   (now supports both <button> and <a>)
 =============================== */
 .dashboard-actions {
     display: flex;
@@ -417,7 +440,9 @@ th {
     margin-bottom: 0;
 }
 
-.date-filter input { width: 100%; }
+.date-filter input {
+    width: 100%;
+}
 
 .filter-buttons {
     display: flex;
@@ -501,15 +526,24 @@ th {
     font-size: 15px;
 }
 
-.primary-home-btn { background: #2471a3; color: white; }
-.primary-home-btn:hover { background: #1b5278; }
+.primary-home-btn {
+    background: #2471a3;
+    color: white;
+}
+
+.primary-home-btn:hover {
+    background: #1b5278;
+}
 
 .secondary-home-btn {
     background: white;
     color: #2471a3;
     border: 1px solid #2471a3;
 }
-.secondary-home-btn:hover { background: #e8f2fa; }
+
+.secondary-home-btn:hover {
+    background: #e8f2fa;
+}
 
 /* Expense Preview */
 .hero-image {
@@ -534,8 +568,14 @@ th {
     margin-bottom: 25px;
 }
 
-.preview-header h3 { font-size: 17px; }
-.preview-header span { color: #2471a3; font-size: 13px; }
+.preview-header h3 {
+    font-size: 17px;
+}
+
+.preview-header span {
+    color: #2471a3;
+    font-size: 13px;
+}
 
 .preview-label {
     color: #777;
@@ -543,7 +583,6 @@ th {
     margin-bottom: 8px;
 }
 
-/* FIX: was .expense-preview h2 — now styles the <p> you actually use */
 .preview-total,
 .expense-preview h2 {
     font-size: 30px;
@@ -567,7 +606,9 @@ th {
     font-size: 14px;
 }
 
-.preview-row span { color: #777; }
+.preview-row span {
+    color: #777;
+}
 
 .preview-footer {
     display: flex;
@@ -580,7 +621,9 @@ th {
 }
 
 /* Features */
-.features-section { padding: 55px 20px; }
+.features-section {
+    padding: 55px 20px;
+}
 
 .section-heading {
     text-align: center;
@@ -593,7 +636,9 @@ th {
     margin-bottom: 12px;
 }
 
-.section-heading p { color: #777; }
+.section-heading p {
+    color: #777;
+}
 
 .features-grid {
     display: grid;
@@ -653,7 +698,6 @@ th {
     margin-bottom: 25px;
 }
 
-/* CTA buttons wrapper */
 .cta-buttons {
     display: flex;
     gap: 15px;
@@ -673,214 +717,7 @@ th {
 }
 
 /* ===============================
-   REPORTS
-=============================== */
-.report-section,
-.reports-page {
-    max-width: 1200px;
-    margin: 25px auto;
-    padding: 15px;
-}
-
-.report-header h2 { margin-bottom: 6px; }
-.report-header p { color: #777; }
-
-.reports-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-bottom: 25px;
-}
-
-.reports-header h2 { margin-bottom: 6px; }
-.reports-header p,
-.report-muted { color: #777; font-size: 14px; }
-
-.report-panel {
-    background: #fff;
-    padding: 22px;
-    margin-bottom: 22px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-}
-
-.report-panel h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-}
-
-.report-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-}
-
-.report-card {
-    background: #fff;
-    padding: 22px;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
-    min-width: 0;
-}
-
-.report-card h3 { margin-bottom: 6px; }
-
-.report-subtitle {
-    color: #777;
-    font-size: 13px;
-    margin-bottom: 15px;
-}
-
-.chart-container,
-.report-chart {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    margin-top: 15px;
-}
-
-/* Date / period filters */
-.date-filter .form-group {
-    flex: 1 1 180px;
-    min-width: 0;
-    margin-bottom: 0;
-}
-
-.period-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 18px 0;
-}
-
-.period-btn {
-    padding: 10px 18px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: #fff;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.period-btn:hover {
-    border-color: #2563eb;
-    color: #2563eb;
-}
-
-.period-btn.active {
-    background: #2563eb;
-    color: white;
-    border-color: #2563eb;
-}
-
-.custom-dates {
-    display: flex;
-    align-items: end;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.custom-dates div {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.custom-dates input,
-.budget-controls input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.custom-dates input:focus,
-.budget-controls input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    outline: none;
-}
-
-/* Report summary stats */
-.report-summary {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 22px;
-}
-
-.report-stat {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-    min-width: 0;
-}
-
-.report-stat span { color: #666; font-size: 14px; }
-
-.report-stat h2 {
-    font-size: 22px;
-    margin: 12px 0;
-    overflow-wrap: anywhere;
-}
-
-.report-stat small { color: #777; }
-
-/* Budget */
-.budget-controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 15px 0 20px;
-}
-
-.budget-result {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin: 20px 0;
-}
-
-.budget-result span { color: #777; font-size: 14px; }
-.budget-result h3 { margin-top: 8px; overflow-wrap: anywhere; }
-
-.budget-progress {
-    height: 12px;
-    background: #e5e7eb;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.budget-progress div {
-    height: 100%;
-    width: 0;
-    background: #2563eb;
-    transition: width 0.3s ease;
-}
-
-#spendingInsights {
-    padding-left: 22px;
-    line-height: 2;
-}
-
-#reportMessage { margin-top: 10px; }
-
-/* Report actions */
-.report-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.report-actions button { cursor: pointer; }
-
-/* ===============================
-   TOUCH DEVICES — disable sticky hover
+   TOUCH DEVICES
 =============================== */
 @media (hover: none) {
     .feature-card:hover {
@@ -907,14 +744,6 @@ th {
     .features-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-
-    .report-summary {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .report-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* ===============================
@@ -925,7 +754,9 @@ th {
         padding: 15px 16px;
     }
 
-    .logo { font-size: 18px; }
+    .logo {
+        font-size: 18px;
+    }
 
     .navbar nav a {
         font-size: 14px;
@@ -942,26 +773,35 @@ th {
         padding: 25px;
     }
 
-    .dashboard { padding: 0 12px; }
+    .dashboard {
+        padding: 0 12px;
+    }
 
     .dashboard-header {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .add-btn { width: 100%; }
+    .add-btn {
+        width: 100%;
+    }
 
     .summary-cards {
         grid-template-columns: 1fr 1fr;
         gap: 12px;
     }
 
-    .summary-card { padding: 18px; }
-    .summary-card p { font-size: 22px; }
-    .table-card { padding: 18px; }
+    .summary-card {
+        padding: 18px;
+    }
 
-    .chart-container,
-    .report-chart { height: 280px; }
+    .summary-card p {
+        font-size: 22px;
+    }
+
+    .table-card {
+        padding: 18px;
+    }
 }
 
 /* ===============================
@@ -976,13 +816,21 @@ th {
         text-align: center;
     }
 
-    .hero-content p { font-size: 14px; }
+    .hero-content p {
+        font-size: 14px;
+    }
 
-    .hero-buttons { justify-content: center; }
+    .hero-buttons {
+        justify-content: center;
+    }
 
-    .home-btn { padding: 12px 20px; }
+    .home-btn {
+        padding: 12px 20px;
+    }
 
-    .hero-image { width: 100%; }
+    .hero-image {
+        width: 100%;
+    }
 
     .expense-preview {
         max-width: 100%;
@@ -990,27 +838,44 @@ th {
     }
 
     .preview-total,
-    .expense-preview h2 { font-size: 26px; }
+    .expense-preview h2 {
+        font-size: 26px;
+    }
 
-    .features-section { padding: 35px 10px; }
+    .features-section {
+        padding: 35px 10px;
+    }
 
-    .section-heading h2 { font-size: 23px; }
-    .section-heading p { font-size: 13px; line-height: 1.6; }
+    .section-heading h2 {
+        font-size: 23px;
+    }
+
+    .section-heading p {
+        font-size: 13px;
+        line-height: 1.6;
+    }
 
     .features-grid {
         grid-template-columns: 1fr;
         gap: 15px;
     }
 
-    .feature-card { padding: 22px; }
+    .feature-card {
+        padding: 22px;
+    }
 
     .cta-section {
         margin: 15px 5px 30px;
         padding: 35px 18px;
     }
 
-    .cta-section h2 { font-size: 22px; }
-    .cta-section p { font-size: 14px; }
+    .cta-section h2 {
+        font-size: 22px;
+    }
+
+    .cta-section p {
+        font-size: 14px;
+    }
 
     .cta-buttons {
         flex-direction: column;
@@ -1034,55 +899,41 @@ th {
         padding: 11px 14px;
     }
 
-    .summary-cards { grid-template-columns: 1fr; }
-    .table-card { padding: 15px; }
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
 
-    /* Filters */
+    .table-card {
+        padding: 15px;
+    }
+
+    /* Dashboard filters */
     .date-filter {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .date-filter .form-group { width: 100%; }
+    .date-filter .form-group {
+        width: 100%;
+    }
 
-    .filter-buttons { width: 100%; }
+    .filter-buttons {
+        width: 100%;
+    }
+
     .filter-buttons .btn-primary {
         flex: 1;
         width: 100%;
     }
-
-    .report-card { padding: 15px; }
-
-    /* Reports page */
-    .reports-page { padding: 10px; }
-    .report-summary { grid-template-columns: 1fr; }
-    .budget-result { grid-template-columns: 1fr; }
-
-    .custom-dates {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .custom-dates div,
-    .custom-dates input { width: 100%; }
-
-    .period-btn { flex: 1; }
-
-    .report-chart { height: 250px; }
-
-    .report-actions {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .report-actions button { width: 100%; }
 }
 
 /* ===============================
    RESPONSIVE — VERY SMALL (≤480px)
 =============================== */
 @media (max-width: 480px) {
-    body { font-size: 14px; }
+    body {
+        font-size: 14px;
+    }
 
     .navbar {
         padding: 14px 12px;
@@ -1090,14 +941,19 @@ th {
         gap: 12px;
     }
 
-    .logo { font-size: 19px; }
+    .logo {
+        font-size: 19px;
+    }
 
     .navbar nav {
         justify-content: center;
         gap: 15px;
     }
 
-    .navbar nav a { margin: 0; font-size: 14px; }
+    .navbar nav a {
+        margin: 0;
+        font-size: 14px;
+    }
 
     .container {
         min-height: 75vh;
@@ -1112,29 +968,62 @@ th {
         border-radius: 8px;
     }
 
-    .auth-card h2 { font-size: 22px; }
-    .subtitle { font-size: 13px; margin-bottom: 20px; }
+    .auth-card h2 {
+        font-size: 22px;
+    }
 
-    .form-group { margin-bottom: 15px; }
-    .form-group label { font-size: 14px; }
+    .subtitle {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
 
-    /* NOTE: keep 16px on inputs — prevents iOS zoom */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
     .form-group input,
     .form-group select {
         padding: 12px;
         font-size: 16px;
     }
 
-    .btn-primary { padding: 13px; font-size: 15px; }
-    .auth-link { font-size: 13px; }
+    .btn-primary {
+        padding: 13px;
+        font-size: 15px;
+    }
+
+    .auth-link {
+        font-size: 13px;
+    }
 
     /* Dashboard */
-    .dashboard { width: 100%; margin: 5px auto; padding: 0 10px; }
-    .dashboard-header { gap: 15px; margin-bottom: 20px; }
-    .dashboard-header h2 { font-size: 21px; }
-    .dashboard-header p { font-size: 13px; }
+    .dashboard {
+        width: 100%;
+        margin: 5px auto;
+        padding: 0 10px;
+    }
 
-    .add-btn { width: 100%; padding: 13px; }
+    .dashboard-header {
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 21px;
+    }
+
+    .dashboard-header p {
+        font-size: 13px;
+    }
+
+    .add-btn {
+        width: 100%;
+        padding: 13px;
+    }
 
     .summary-cards {
         grid-template-columns: 1fr;
@@ -1147,11 +1036,24 @@ th {
         border-radius: 8px;
     }
 
-    .summary-card h3 { font-size: 14px; margin-bottom: 10px; }
-    .summary-card p { font-size: 24px; }
+    .summary-card h3 {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
 
-    .table-card { padding: 15px 12px; border-radius: 8px; }
-    .table-card h3 { font-size: 17px; margin-bottom: 15px; }
+    .summary-card p {
+        font-size: 24px;
+    }
+
+    .table-card {
+        padding: 15px 12px;
+        border-radius: 8px;
+    }
+
+    .table-card h3 {
+        font-size: 17px;
+        margin-bottom: 15px;
+    }
 
     th, td {
         padding: 11px 10px;
@@ -1165,18 +1067,42 @@ th {
         font-size: 12px;
     }
 
-    .message { font-size: 13px; line-height: 1.5; }
-    .footer { padding: 15px 10px; font-size: 12px; }
+    .message {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .footer {
+        padding: 15px 10px;
+        font-size: 12px;
+    }
 }
 
 /* ===============================
    RESPONSIVE — EXTRA SMALL (≤360px)
 =============================== */
 @media (max-width: 360px) {
-    .logo { font-size: 17px; }
-    .auth-card { padding: 18px 14px; }
-    .auth-card h2 { font-size: 20px; }
-    .summary-card p { font-size: 21px; }
-    .dashboard-header h2 { font-size: 19px; }
-    .table-card { padding: 12px 8px; }
+    .logo {
+        font-size: 17px;
+    }
+
+    .auth-card {
+        padding: 18px 14px;
+    }
+
+    .auth-card h2 {
+        font-size: 20px;
+    }
+
+    .summary-card p {
+        font-size: 21px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 19px;
+    }
+
+    .table-card {
+        padding: 12px 8px;
+    }
 }

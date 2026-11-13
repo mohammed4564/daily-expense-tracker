@@ -10,17 +10,57 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
+
+
+<script>
+function logout() {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem("access_token");
+
+    document.getElementById("loginNav").style.display =
+        token ? "none" : "inline-block";
+
+    document.getElementById("registerNav").style.display =
+        token ? "none" : "inline-block";
+
+    document.getElementById("logoutBtn").style.display =
+        token ? "inline-block" : "none";
+});
+</script>
+
 <body>
 
-    <header class="navbar">
-        <div class="logo">Daily Expense Tracker</div>
+  
+<header class="navbar">
+    <div class="logo">
+        Daily Expense Tracker
+    </div>
 
-        <nav>
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('login_page') }}">Login</a>
-            <a href="{{ url_for('register_page') }}">Register</a>
-        </nav>
-    </header>
+    <nav class="main-nav">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('dashboard_page') }}">Dashboard</a>
+        <a href="{{ url_for('add_expense_page') }}">Expenses</a>
+        <a href="{{ url_for('income_page') }}">Income</a>
+        <a href="{{ url_for('borrow_lend_page') }}">Borrow / Lend</a>
+        <a href="{{ url_for('reports_page') }}">Reports</a>
+    </nav>
+
+    <div class="nav-auth">
+        <a href="{{ url_for('login_page') }}" id="loginNav">Login</a>
+        <a href="{{ url_for('register_page') }}" id="registerNav">Register</a>
+        <button type="button" id="logoutBtn"
+                onclick="logout()" style="display:none;">
+            Logout
+        </button>
+    </div>
+</header>
+
 
     <main class="container">
         {% block content %}{% endblock %}

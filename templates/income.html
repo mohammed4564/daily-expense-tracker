@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}Income Management{% endblock %}
@@ -10,19 +9,24 @@
     <p>Manage your salary and other income sources.</p>
 </div>
 
+
+<!-- INCOME FORM -->
 <div class="form-card">
+
     <h3 id="formTitle">Add Income</h3>
 
     <form id="incomeForm">
+
         <input type="hidden" id="income_id">
 
         <div class="form-group">
-            <label>Income Date</label>
+            <label for="income_date">Income Date</label>
             <input type="date" id="income_date" required>
         </div>
 
         <div class="form-group">
-            <label>Category</label>
+            <label for="category">Category</label>
+
             <select id="category" required>
                 <option value="">Select Category</option>
                 <option value="Salary">Salary</option>
@@ -35,34 +39,65 @@
         </div>
 
         <div class="form-group">
-            <label>Description</label>
-            <input type="text" id="description"
-                   placeholder="Enter description">
+            <label for="description">Description</label>
+
+            <input
+                type="text"
+                id="description"
+                maxlength="250"
+                placeholder="Enter description"
+            >
         </div>
 
         <div class="form-group">
-            <label>Amount</label>
-            <input type="number" id="amount"
-                   step="0.01" min="0.01"
-                   placeholder="Enter amount" required>
+            <label for="amount">Amount</label>
+
+            <input
+                type="number"
+                id="amount"
+                step="0.01"
+                min="0.01"
+                placeholder="Enter amount"
+                required
+            >
         </div>
 
-        <button type="submit" id="submitBtn">
-            Add Income
-        </button>
+        <div class="form-actions">
 
-        <button type="button" id="cancelBtn"
-                onclick="resetForm()" style="display:none;">
-            Cancel
-        </button>
+            <button
+                type="submit"
+                id="submitBtn"
+                class="btn-primary"
+            >
+                Add Income
+            </button>
+
+            <button
+                type="button"
+                id="cancelBtn"
+                class="btn-secondary"
+                onclick="resetForm()"
+                style="display:none;"
+            >
+                Cancel
+            </button>
+
+        </div>
+
     </form>
+
 </div>
 
+
+<!-- INCOME HISTORY -->
 <div class="table-card">
+
     <h3>Income History</h3>
 
     <div class="table-responsive">
+
         <table>
+
             <thead>
                 <tr>
                     <th>ID</th>
@@ -75,12 +110,19 @@
             </thead>
 
             <tbody id="incomeTable">
+
                 <tr>
-                    <td colspan="6">Loading...</td>
+                    <td colspan="6" class="table-message">
+                        Loading...
+                    </td>
                 </tr>
+
             </tbody>
+
         </table>
+
     </div>
+
 </div>
 
 {% endblock %}
@@ -89,97 +131,230 @@
 {% block scripts %}
 
 <script>
+
 const API_URL = "/api/income";
 
-// Change this key if your login page stores
-// the JWT token under a different localStorage key.
+
+// GET TOKEN
 function getToken() {
+
     return localStorage.getItem("access_token");
+
 }
 
+
+// API REQUEST
 async function apiRequest(url, options = {}) {
+
     const token = getToken();
 
     if (!token) {
+
         alert("Please login first.");
+
         window.location.href = "/login";
+
         throw new Error("Authentication required");
+
     }
 
     const response = await fetch(url, {
+
         ...options,
+
         headers: {
+
             "Content-Type": "application/json",
+
             "Authorization": `Bearer ${token}`,
+
             ...options.headers
+
         }
+
     });
 
-    const result = await response.json();
 
-    if (!response.ok) {
-        throw new Error(result.message || "Request failed");
+    let result;
+
+    try {
+
+        result = await response.json();
+
+    } catch {
+
+        throw new Error("Invalid server response.");
+
     }
 
+
+    if (response.status === 401) {
+
+        localStorage.removeItem("access_token");
+
+        alert("Your session has expired. Please login again.");
+
+        window.location.href = "/login";
+
+        throw new Error("Session expired");
+
+    }
+
+
+    if (!response.ok) {
+
+        throw new Error(result.message || "Request failed");
+
+    }
+
+
     return result;
+
 }
+
+
+
+// CREATE TABLE CELL SAFELY
+function createCell(value) {
+
+    const td = document.createElement("td");
+
+    td.textContent = value ?? "-";
+
+    return td;
+
+}
+
 
 
 // LOAD INCOME
 async function loadIncome() {
+
     const table = document.getElementById("incomeTable");
 
+
+    table.innerHTML = `
+        <tr>
+            <td colspan="6" class="table-message">
+                Loading income records...
+            </td>
+        </tr>
+    `;
+
+
     try {
+
         const result = await apiRequest(API_URL);
 
         table.innerHTML = "";
 
-        if (!result.data || result.data.length === 0) {
-            table.innerHTML =
-                `<tr><td colspan="6">No income records found</td></tr>`;
+
+        const records = result.data || [];
+
+
+        if (records.length === 0) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6" class="table-message">
+                        No income records found.
+                    </td>
+                </tr>
+            `;
+
             return;
+
         }
 
-        result.data.forEach(item => {
+
+        records.forEach(item => {
+
             const row = document.createElement("tr");
 
-            const values = [
-                item.income_id,
-                item.income_date,
-                item.category,
-                item.description || "-",
-                Number(item.amount).toFixed(2)
-            ];
 
-            values.forEach(value => {
-                const td = document.createElement("td");
-                td.textContent = value;
-                row.appendChild(td);
-            });
+            // INCOME DETAILS
+            row.appendChild(createCell(item.income_id));
 
+            row.appendChild(createCell(item.income_date));
+
+            row.appendChild(createCell(item.category));
+
+            row.appendChild(
+                createCell(item.description || "-")
+            );
+
+            row.appendChild(
+                createCell(Number(item.amount).toFixed(2))
+            );
+
+
+            // ACTION BUTTONS
             const actionCell = document.createElement("td");
 
-            const editBtn = document.createElement("button");
-            editBtn.textContent = "Edit";
-            editBtn.type = "button";
-            editBtn.onclick = () => editIncome(item.income_id);
+            actionCell.className = "action-buttons";
 
+
+            // EDIT BUTTON
+            const editBtn = document.createElement("button");
+
+            editBtn.type = "button";
+
+            editBtn.textContent = "Edit";
+
+            editBtn.className = "btn-edit";
+
+            editBtn.onclick = () => {
+
+                editIncome(item.income_id);
+
+            };
+
+
+            // DELETE BUTTON
             const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Delete";
+
             deleteBtn.type = "button";
-            deleteBtn.onclick = () => deleteIncome(item.income_id);
+
+            deleteBtn.textContent = "Delete";
+
+            deleteBtn.className = "btn-delete";
+
+            deleteBtn.onclick = () => {
+
+                deleteIncome(item.income_id);
+
+            };
+
 
             actionCell.append(editBtn, deleteBtn);
+
             row.appendChild(actionCell);
 
             table.appendChild(row);
+
         });
 
+
     } catch (error) {
-        table.innerHTML =
-            `<tr><td colspan="6">${error.message}</td></tr>`;
+
+        table.innerHTML = "";
+
+        const row = document.createElement("tr");
+
+        const cell = createCell(error.message);
+
+        cell.colSpan = 6;
+
+        cell.className = "table-message error-message";
+
+        row.appendChild(cell);
+
+        table.appendChild(row);
+
     }
+
 }
+
 
 
 // ADD / UPDATE INCOME
@@ -188,100 +363,248 @@ document.getElementById("incomeForm")
 
     e.preventDefault();
 
-    const incomeId = document.getElementById("income_id").value;
+
+    const incomeId =
+        document.getElementById("income_id").value;
+
+
+    const amount = Number(
+        document.getElementById("amount").value
+    );
+
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+
+        alert("Please enter a valid amount greater than zero.");
+
+        return;
+
+    }
+
 
     const data = {
-        income_date: document.getElementById("income_date").value,
-        category: document.getElementById("category").value,
-        description: document.getElementById("description").value,
-        amount: document.getElementById("amount").value
+
+        income_date:
+            document.getElementById("income_date").value,
+
+        category:
+            document.getElementById("category").value,
+
+        description:
+            document.getElementById("description").value.trim(),
+
+        amount: amount
+
     };
 
+
+    const submitBtn =
+        document.getElementById("submitBtn");
+
+
     try {
+
+        submitBtn.disabled = true;
+
+        submitBtn.textContent =
+            incomeId ? "Updating..." : "Saving...";
+
+
         if (incomeId) {
+
             await apiRequest(`${API_URL}/${incomeId}`, {
+
                 method: "PUT",
+
                 body: JSON.stringify(data)
+
             });
 
-            alert("Income updated successfully");
+            alert("Income updated successfully.");
+
         } else {
+
             await apiRequest(API_URL, {
+
                 method: "POST",
+
                 body: JSON.stringify(data)
+
             });
 
-            alert("Income added successfully");
+            alert("Income added successfully.");
+
         }
 
+
         resetForm();
-        loadIncome();
+
+        await loadIncome();
+
 
     } catch (error) {
+
         alert(error.message);
+
+    } finally {
+
+        submitBtn.disabled = false;
+
+        submitBtn.textContent =
+            document.getElementById("income_id").value
+                ? "Update Income"
+                : "Add Income";
+
     }
+
 });
+
 
 
 // EDIT INCOME
 async function editIncome(id) {
+
     try {
-        const result = await apiRequest(`${API_URL}/${id}`);
+
+        const result =
+            await apiRequest(`${API_URL}/${id}`);
+
+
         const item = result.data;
 
-        document.getElementById("income_id").value = item.income_id;
-        document.getElementById("income_date").value = item.income_date;
-        document.getElementById("category").value = item.category;
+        if (!item) {
+
+            throw new Error("Income record not found.");
+
+        }
+
+
+        document.getElementById("income_id").value =
+            item.income_id;
+
+
+        document.getElementById("income_date").value =
+            item.income_date;
+
+
+        document.getElementById("category").value =
+            item.category;
+
+
         document.getElementById("description").value =
             item.description || "";
-        document.getElementById("amount").value = item.amount;
 
-        document.getElementById("formTitle").textContent = "Edit Income";
-        document.getElementById("submitBtn").textContent = "Update Income";
-        document.getElementById("cancelBtn").style.display = "inline-block";
+
+        document.getElementById("amount").value =
+            item.amount;
+
+
+        document.getElementById("formTitle").textContent =
+            "Edit Income";
+
+
+        document.getElementById("submitBtn").textContent =
+            "Update Income";
+
+
+        document.getElementById("cancelBtn").style.display =
+            "inline-block";
+
 
         document.getElementById("incomeForm")
-            .scrollIntoView({ behavior: "smooth" });
+            .scrollIntoView({
+
+                behavior: "smooth"
+
+            });
+
 
     } catch (error) {
+
         alert(error.message);
+
     }
+
 }
+
 
 
 // DELETE INCOME
 async function deleteIncome(id) {
+
     if (!confirm("Are you sure you want to delete this income?")) {
+
         return;
+
     }
+
 
     try {
+
         await apiRequest(`${API_URL}/${id}`, {
+
             method: "DELETE"
+
         });
 
-        alert("Income deleted successfully");
-        loadIncome();
+
+        alert("Income deleted successfully.");
+
+
+        // If the deleted record is currently being edited,
+        // reset the form.
+        if (
+            document.getElementById("income_id").value == id
+        ) {
+
+            resetForm();
+
+        }
+
+
+        await loadIncome();
+
 
     } catch (error) {
+
         alert(error.message);
+
     }
+
 }
+
 
 
 // RESET FORM
 function resetForm() {
+
     document.getElementById("incomeForm").reset();
+
+
     document.getElementById("income_id").value = "";
 
-    document.getElementById("formTitle").textContent = "Add Income";
-    document.getElementById("submitBtn").textContent = "Add Income";
-    document.getElementById("cancelBtn").style.display = "none";
+
+    document.getElementById("formTitle").textContent =
+        "Add Income";
+
+
+    document.getElementById("submitBtn").textContent =
+        "Add Income";
+
+
+    document.getElementById("cancelBtn").style.display =
+        "none";
+
 }
 
 
+
 // INITIAL LOAD
-document.addEventListener("DOMContentLoaded", loadIncome);
+document.addEventListener("DOMContentLoaded", function() {
+
+    loadIncome();
+
+});
 
 </script>
 

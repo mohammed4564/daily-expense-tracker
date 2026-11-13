@@ -1496,3 +1496,366 @@ table td {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* =========================================
+   INCOME & BORROW/LEND BUTTONS
+========================================= */
+
+/* Form buttons */
+.form-card button,
+#incomeForm button,
+#borrowLendForm button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 130px;
+    padding: 12px 20px;
+    margin: 5px 8px 5px 0;
+    border: none;
+    border-radius: 7px;
+    background: #2471a3;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.form-card button:hover,
+#incomeForm button:hover,
+#borrowLendForm button:hover {
+    background: #1b5278;
+    transform: translateY(-1px);
+}
+
+/* Cancel button */
+#cancelBtn {
+    background: #64748b !important;
+    color: #ffffff;
+}
+
+#cancelBtn:hover {
+    background: #475569 !important;
+}
+
+/* Table action buttons */
+.btn-edit,
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 65px;
+    padding: 8px 13px;
+    margin: 3px;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-edit {
+    background: #2471a3;
+}
+
+.btn-edit:hover {
+    background: #1b5278;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #dc3545;
+}
+
+.btn-delete:hover {
+    background: #b52b27;
+    transform: translateY(-1px);
+}
+
+/* Income and Borrow/Lend page layout */
+.form-card,
+.table-card {
+    width: 100%;
+    max-width: 1100px;
+    margin: 20px auto;
+}
+
+.form-card {
+    max-width: 750px;
+}
+
+.form-card h3,
+.table-card h3 {
+    color: #243447;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+/* Form inputs */
+.form-card input,
+.form-card select,
+.form-card textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 15px;
+}
+
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Filter dropdown */
+#typeFilter {
+    width: 100%;
+    max-width: 250px;
+    padding: 11px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 14px;
+}
+
+/* Table */
+.table-card table {
+    width: 100%;
+    min-width: 750px;
+    border-collapse: collapse;
+}
+
+.table-card th {
+    background: #edf2f7;
+    color: #243447;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.table-card td,
+.table-card th {
+    padding: 13px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+.table-card tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Page heading */
+.page-header {
+    width: 100%;
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 5px;
+}
+
+.page-header h2 {
+    color: #243447;
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+
+.page-header p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    .form-card {
+        padding: 18px;
+    }
+
+    .form-card button,
+    #incomeForm button,
+    #borrowLendForm button {
+        min-width: 110px;
+        padding: 11px 15px;
+        font-size: 13px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        min-width: 58px;
+        padding: 7px 9px;
+        font-size: 12px;
+    }
+
+    .page-header h2 {
+        font-size: 22px;
+    }
+
+    .form-card h3,
+    .table-card h3 {
+        font-size: 18px;
+    }
+
+    #typeFilter {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .form-card button,
+    #incomeForm button,
+    #borrowLendForm button {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+
+/* BORROW & LEND PAGE */
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.form-actions button {
+    min-width: 130px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary {
+    background: #2563eb;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #64748b;
+}
+
+.btn-secondary:hover {
+    background: #475569;
+}
+
+.form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* TABLE ACTION BUTTONS */
+
+.action-buttons {
+    white-space: nowrap;
+}
+
+.action-buttons button {
+    padding: 7px 12px;
+    margin: 3px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-edit {
+    background: #2563eb;
+}
+
+.btn-edit:hover {
+    background: #1d4ed8;
+}
+
+.btn-delete {
+    background: #dc2626;
+}
+
+.btn-delete:hover {
+    background: #b91c1c;
+}
+
+
+/* STATUS BADGES */
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-completed {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+
+/* FILTER */
+
+.filter-group {
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+
+
+/* TABLE MESSAGES */
+
+.table-message {
+    text-align: center;
+    padding: 18px;
+    color: #64748b;
+}
+
+.error-message {
+    color: #dc2626;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+    .action-buttons button {
+        padding: 6px 9px;
+        font-size: 12px;
+    }
+
+    .filter-group {
+        max-width: 100%;
+    }
+}

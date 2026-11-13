@@ -6,27 +6,28 @@
 
 <div class="home-container">
 
-    <!-- =================================
-         HERO SECTION
-    ================================= -->
+    <!-- HERO SECTION -->
     <section class="hero-section" aria-labelledby="hero-heading">
 
         <div class="hero-content">
 
-            <span class="hero-tag">PERSONAL FINANCE MANAGEMENT</span>
+            <span class="hero-tag">
+                PERSONAL FINANCE MANAGEMENT
+            </span>
 
             <h1 id="hero-heading">
-                Manage Your Money.
-                <span>Track Your Expenses.</span>
+                Take Control of Your Money.
+                <span>Manage Your Finances Smarter.</span>
             </h1>
 
             <p>
-                Take control of your daily spending with a simple and
-                smart expense tracker. Record expenses, monitor monthly
-                spending and understand where your money goes.
+                Manage your daily expenses, track your income,
+                monitor borrowed and lent money, and understand
+                your financial activities — all in one place.
             </p>
 
             <div class="hero-buttons">
+
                 <a href="{{ url_for('register_page') }}"
                    class="home-btn primary-home-btn">
                     Get Started
@@ -36,101 +37,307 @@
                    class="home-btn secondary-home-btn">
                     Login
                 </a>
+
+            </div>
+
+            <div class="hero-highlights">
+                <span>✓ Easy to use</span>
+                <span>✓ Track income & expenses</span>
+                <span>✓ Personal financial records</span>
             </div>
 
         </div>
 
-        <!-- Decorative preview card (not real data) -->
+
+        <!-- FINANCIAL PREVIEW -->
         <div class="hero-image" aria-hidden="true">
+
             <div class="expense-preview">
 
                 <div class="preview-header">
-                    <h3>Expense Overview</h3>
+                    <h3>Financial Overview</h3>
                     <span>Monthly</span>
                 </div>
 
-                <p class="preview-label">Total Expenses</p>
-                <p class="preview-total">₹12,500.00</p>
+
+                <div class="preview-summary">
+
+                    <div>
+                        <p class="preview-label">Total Income</p>
+                        <p class="preview-income">₹35,000.00</p>
+                    </div>
+
+                    <div>
+                        <p class="preview-label">Total Expenses</p>
+                        <p class="preview-total">₹12,500.00</p>
+                    </div>
+
+                </div>
+
 
                 <div class="preview-divider"></div>
 
+                <h4 class="preview-section-title">
+                    Expense Breakdown
+                </h4>
+
                 <div class="preview-row">
-                    <span>Food</span>
+                    <span>🍔 Food</span>
                     <strong>₹3,000</strong>
                 </div>
 
                 <div class="preview-row">
-                    <span>Travel</span>
+                    <span>🚗 Travel</span>
                     <strong>₹2,500</strong>
                 </div>
 
                 <div class="preview-row">
-                    <span>Shopping</span>
+                    <span>🛍️ Shopping</span>
                     <strong>₹4,000</strong>
                 </div>
 
                 <div class="preview-row">
-                    <span>Bills</span>
+                    <span>💡 Bills</span>
                     <strong>₹3,000</strong>
                 </div>
 
+
+                <div class="preview-divider"></div>
+
                 <div class="preview-footer">
-                    <span>Track every rupee!</span>
-                    <span aria-hidden="true">✓</span>
+                    <span>Available Balance</span>
+                    <strong>₹22,500.00</strong>
                 </div>
 
+                <p class="preview-note">
+                    Sample data for demonstration only
+                </p>
+
             </div>
+
         </div>
 
     </section>
 
 
-    <!-- =================================
-         FEATURES SECTION
-    ================================= -->
-    <section class="features-section" aria-labelledby="features-heading">
+
+    <!-- FEATURES SECTION -->
+    <section class="features-section"
+             aria-labelledby="features-heading">
 
         <div class="section-heading">
-            <h2 id="features-heading">Everything You Need to Manage Expenses</h2>
-            <p>Simple tools to help you understand your spending.</p>
+
+            <span class="hero-tag">OUR FEATURES</span>
+
+            <h2 id="features-heading">
+                Everything You Need to Manage Your Money
+            </h2>
+
+            <p>
+                Simple tools to organize your financial activities
+                and make better financial decisions.
+            </p>
+
         </div>
+
 
         <div class="features-grid">
 
-            <article class="feature-card">
-                <div class="feature-icon" role="img" aria-label="Money bag">💰</div>
-                <h3>Track Expenses</h3>
-                <p>
-                    Easily record your daily expenses with date,
-                    category, description and amount.
-                </p>
-            </article>
 
+            <!-- EXPENSE MANAGEMENT -->
             <article class="feature-card">
-                <div class="feature-icon" role="img" aria-label="Bar chart">📊</div>
-                <h3>Expense Summary</h3>
-                <p>
-                    View your total expenses and current month's
-                    spending in one place.
-                </p>
-            </article>
 
-            <article class="feature-card">
-                <div class="feature-icon" role="img" aria-label="Memo">📝</div>
-                <h3>Manage Records</h3>
+                <div class="feature-icon"
+                     role="img"
+                     aria-label="Money">
+
+                    💰
+
+                </div>
+
+                <h3>Expense Management</h3>
+
                 <p>
-                    Add, edit, view and delete your expense records
+                    Record your daily expenses with date, category,
+                    description and amount. Edit or delete records
                     whenever needed.
                 </p>
+
             </article>
 
+
+            <!-- INCOME MANAGEMENT -->
             <article class="feature-card">
-                <div class="feature-icon" role="img" aria-label="Lock">🔐</div>
-                <h3>Secure Account</h3>
+
+                <div class="feature-icon"
+                     role="img"
+                     aria-label="Income">
+
+                    💵
+
+                </div>
+
+                <h3>Income Management</h3>
+
                 <p>
-                    Register and log in to manage your own
-                    personal expense records.
+                    Track salary, business income, freelancing,
+                    investments and other sources of income.
                 </p>
+
+            </article>
+
+
+            <!-- BORROW AND LEND -->
+            <article class="feature-card">
+
+                <div class="feature-icon"
+                     role="img"
+                     aria-label="Borrow and lend">
+
+                    🤝
+
+                </div>
+
+                <h3>Borrow & Lend Management</h3>
+
+                <p>
+                    Keep track of money borrowed from others
+                    and money lent to others, including due dates
+                    and transaction status.
+                </p>
+
+            </article>
+
+
+            <!-- DASHBOARD -->
+            <article class="feature-card">
+
+                <div class="feature-icon"
+                     role="img"
+                     aria-label="Dashboard">
+
+                    📊
+
+                </div>
+
+                <h3>Financial Dashboard</h3>
+
+                <p>
+                    Get an overview of your income, expenses,
+                    monthly spending and available balance
+                    from one dashboard.
+                </p>
+
+            </article>
+
+
+            <!-- REPORTS -->
+            <article class="feature-card">
+
+                <div class="feature-icon"
+                     role="img"
+                     aria-label="Reports">
+
+                    📈
+
+                </div>
+
+                <h3>Reports & Analytics</h3>
+
+                <p>
+                    Understand your spending patterns through
+                    charts, category-wise summaries and
+                    financial reports.
+                </p>
+
+            </article>
+
+
+            <!-- SECURITY -->
+            <article class="feature-card">
+
+                <div class="feature-icon"
+                     role="img"
+                     aria-label="Security">
+
+                    🔐
+
+                </div>
+
+                <h3>Secure Account</h3>
+
+                <p>
+                    Register and log in to access your own
+                    financial records through your personal account.
+                </p>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works-section">
+
+        <div class="section-heading">
+
+            <span class="hero-tag">GET STARTED</span>
+
+            <h2>How It Works</h2>
+
+            <p>
+                Start organizing your financial activities
+                in three simple steps.
+            </p>
+
+        </div>
+
+
+        <div class="steps-grid">
+
+            <article class="step-card">
+
+                <div class="step-number">01</div>
+
+                <h3>Create Your Account</h3>
+
+                <p>
+                    Register with your details to create
+                    your personal account.
+                </p>
+
+            </article>
+
+
+            <article class="step-card">
+
+                <div class="step-number">02</div>
+
+                <h3>Record Transactions</h3>
+
+                <p>
+                    Add your income, expenses and
+                    borrow/lend transactions.
+                </p>
+
+            </article>
+
+
+            <article class="step-card">
+
+                <div class="step-number">03</div>
+
+                <h3>Monitor Your Finances</h3>
+
+                <p>
+                    View your dashboard, analyze spending
+                    and generate financial reports.
+                </p>
+
             </article>
 
         </div>
@@ -138,28 +345,36 @@
     </section>
 
 
-    <!-- =================================
-         CALL TO ACTION
-    ================================= -->
-    <section class="cta-section" aria-labelledby="cta-heading">
 
-        <h2 id="cta-heading">Start Managing Your Expenses Today!</h2>
+    <!-- CALL TO ACTION -->
+    <section class="cta-section"
+             aria-labelledby="cta-heading">
+
+        <h2 id="cta-heading">
+            Start Managing Your Money Today!
+        </h2>
 
         <p>
-            Create your free account and take the first step
-            towards better expense management.
+            Create your free account and organize your income,
+            expenses and financial transactions in one place.
         </p>
 
         <div class="cta-buttons">
+
             <a href="{{ url_for('register_page') }}"
                class="home-btn primary-home-btn">
+
                 Create Your Account
+
             </a>
 
             <a href="{{ url_for('login_page') }}"
                class="home-btn secondary-home-btn">
-                Already have an account?
+
+                Already Have an Account?
+
             </a>
+
         </div>
 
     </section>

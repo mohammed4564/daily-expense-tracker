@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from flask import render_template
 from routes.auth_routes import auth_bp
 from routes.expense_routes import expense_bp
+from routes.income_routes import income_bp
+from routes.borrow_lend_routes import borrow_lend_bp
 
 load_dotenv()
 
@@ -45,6 +47,16 @@ def edit_expense_page(expense_id):
 def reports_page():
     return render_template("reports.html")
 
+
+@app.route("/income")
+def income_page():
+    return render_template("income.html")
+
+
+@app.route("/borrow-lend")
+def borrow_lend_page():
+    return render_template("borrow_lend.html")
+
 @app.route("/")
 def home():
      return render_template("home.html")
@@ -61,6 +73,8 @@ jwt = JWTManager(app)
 # Register API blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(expense_bp)
+app.register_blueprint(income_bp)
+app.register_blueprint(borrow_lend_bp)
 
 # =================================
 # API HEALTH CHECK

@@ -68,6 +68,11 @@ if not app.config["JWT_SECRET_KEY"]:
 
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=2)
 
+from datetime import timedelta
+
+
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
+
 jwt = JWTManager(app)
 
 # Register API blueprints

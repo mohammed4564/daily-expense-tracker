@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}Borrow & Lend Management{% endblock %}
@@ -19,8 +18,7 @@
         <input type="hidden" id="transaction_id">
 
         <div class="form-group">
-            <label>Transaction Type</label>
-
+            <label for="transaction_type">Transaction Type</label>
             <select id="transaction_type" required>
                 <option value="">Select Type</option>
                 <option value="BORROWED">Borrowed Money</option>
@@ -29,36 +27,49 @@
         </div>
 
         <div class="form-group">
-            <label>Person Name</label>
-            <input type="text" id="person_name"
-                   placeholder="Enter person name" required>
+            <label for="person_name">Person Name</label>
+            <input
+                type="text"
+                id="person_name"
+                placeholder="Enter person name"
+                maxlength="150"
+                required
+            >
         </div>
 
         <div class="form-group">
-            <label>Amount</label>
-            <input type="number" id="amount"
-                   min="0.01" step="0.01"
-                   placeholder="Enter amount" required>
+            <label for="amount">Amount</label>
+            <input
+                type="number"
+                id="amount"
+                min="0.01"
+                step="0.01"
+                placeholder="Enter amount"
+                required
+            >
         </div>
 
         <div class="form-group">
-            <label>Transaction Date</label>
+            <label for="transaction_date">Transaction Date</label>
             <input type="date" id="transaction_date" required>
         </div>
 
         <div class="form-group">
-            <label>Due Date</label>
+            <label for="due_date">Due Date</label>
             <input type="date" id="due_date">
         </div>
 
         <div class="form-group">
-            <label>Description</label>
-            <textarea id="description"
-                      placeholder="Enter description"></textarea>
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                maxlength="250"
+                placeholder="Enter description"
+            ></textarea>
         </div>
 
         <div class="form-group" id="statusGroup" style="display:none;">
-            <label>Status</label>
+            <label for="status">Status</label>
             <select id="status">
                 <option value="ACTIVE">Active</option>
                 <option value="COMPLETED">Completed</option>
@@ -66,14 +77,21 @@
             </select>
         </div>
 
-        <button type="submit" id="submitBtn">
-            Save Record
-        </button>
+        <div class="form-actions">
+            <button type="submit" id="submitBtn" class="btn-primary">
+                Save Record
+            </button>
 
-        <button type="button" id="cancelBtn"
-                onclick="resetForm()" style="display:none;">
-            Cancel
-        </button>
+            <button
+                type="button"
+                id="cancelBtn"
+                class="btn-secondary"
+                onclick="resetForm()"
+                style="display:none;"
+            >
+                Cancel
+            </button>
+        </div>
 
     </form>
 </div>
@@ -83,10 +101,10 @@
 
     <h3>Borrow / Lend History</h3>
 
-    <div class="form-group">
-        <label>Filter Transaction</label>
+    <div class="form-group filter-group">
+        <label for="typeFilter">Filter Transaction</label>
 
-        <select id="typeFilter" onchange="loadRecords()">
+        <select id="typeFilter">
             <option value="ALL">All Transactions</option>
             <option value="BORROWED">Borrowed</option>
             <option value="LENT">Lent</option>
@@ -111,7 +129,7 @@
 
             <tbody id="recordsTable">
                 <tr>
-                    <td colspan="8">Loading...</td>
+                    <td colspan="8" class="table-message">Loading...</td>
                 </tr>
             </tbody>
         </table>
@@ -129,6 +147,8 @@
 
 const API_URL = "/api/borrow-lend";
 
+
+// GET TOKEN
 function getToken() {
     return localStorage.getItem("access_token");
 }
@@ -154,7 +174,20 @@ async function apiRequest(url, options = {}) {
         }
     });
 
-    const result = await response.json();
+    let result;
+
+    try {
+        result = await response.json();
+    } catch {
+        throw new Error("Invalid server response.");
+    }
+
+    if (response.status === 401) {
+        localStorage.removeItem("access_token");
+        alert("Your session has expired. Please login again.");
+        window.location.href = "/login";
+        throw new Error("Session expired");
+    }
 
     if (!response.ok) {
         throw new Error(result.message || "Request failed");
@@ -164,11 +197,27 @@ async function apiRequest(url, options = {}) {
 }
 
 
+// CREATE TABLE CELL SAFELY
+function createCell(value) {
+
+    const td = document.createElement("td");
+    td.textContent = value ?? "-";
+
+    return td;
+}
+
+
 // LOAD RECORDS
 async function loadRecords() {
 
     const table = document.getElementById("recordsTable");
     const filter = document.getElementById("typeFilter").value;
+
+    table.innerHTML = `
+        <tr>
+            <td colspan="8" class="table-message">Loading records...</td>
+        </tr>
+    `;
 
     try {
 
@@ -185,8 +234,15 @@ async function loadRecords() {
         }
 
         if (records.length === 0) {
-            table.innerHTML =
-                `<tr><td colspan="8">No records found</td></tr>`;
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="8" class="table-message">
+                        No records found.
+                    </td>
+                </tr>
+            `;
+
             return;
         }
 
@@ -194,48 +250,79 @@ async function loadRecords() {
 
             const row = document.createElement("tr");
 
-            const values = [
-                item.transaction_id,
-                item.transaction_type,
-                item.person_name,
-                Number(item.amount).toFixed(2),
-                item.transaction_date,
-                item.due_date || "-",
-                item.status
-            ];
+            row.appendChild(createCell(item.transaction_id));
+            row.appendChild(createCell(item.transaction_type));
+            row.appendChild(createCell(item.person_name));
 
-            values.forEach(value => {
-                const td = document.createElement("td");
-                td.textContent = value;
-                row.appendChild(td);
-            });
+            row.appendChild(
+                createCell(Number(item.amount).toFixed(2))
+            );
 
+            row.appendChild(createCell(item.transaction_date));
+            row.appendChild(createCell(item.due_date || "-"));
+
+            // STATUS BADGE
+            const statusCell = document.createElement("td");
+            const statusBadge = document.createElement("span");
+
+            statusBadge.textContent = item.status;
+            statusBadge.className =
+                "status-badge status-" +
+                String(item.status).toLowerCase();
+
+            statusCell.appendChild(statusBadge);
+            row.appendChild(statusCell);
+
+
+            // ACTION BUTTONS
             const actionCell = document.createElement("td");
+            actionCell.className = "action-buttons";
 
             const editBtn = document.createElement("button");
             editBtn.type = "button";
             editBtn.textContent = "Edit";
-            editBtn.onclick = () =>
+            editBtn.className = "btn-edit";
+
+            editBtn.onclick = () => {
                 editRecord(item.transaction_id);
+            };
+
 
             const deleteBtn = document.createElement("button");
             deleteBtn.type = "button";
             deleteBtn.textContent = "Delete";
-            deleteBtn.onclick = () =>
+            deleteBtn.className = "btn-delete";
+
+            deleteBtn.onclick = () => {
                 deleteRecord(item.transaction_id);
+            };
 
             actionCell.append(editBtn, deleteBtn);
             row.appendChild(actionCell);
 
             table.appendChild(row);
+
         });
 
     } catch (error) {
 
-        table.innerHTML =
-            `<tr><td colspan="8">${error.message}</td></tr>`;
+        table.innerHTML = "";
+
+        const row = document.createElement("tr");
+        const cell = createCell(error.message);
+
+        cell.colSpan = 8;
+        cell.className = "table-message error-message";
+
+        row.appendChild(cell);
+        table.appendChild(row);
     }
 }
+
+
+// FILTER RECORDS
+document.getElementById("typeFilter")
+.addEventListener("change", loadRecords);
 
 
 // ADD / UPDATE RECORD
@@ -246,32 +333,54 @@ document.getElementById("borrowLendForm")
 
     const id = document.getElementById("transaction_id").value;
 
+    const amount = Number(
+        document.getElementById("amount").value
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        alert("Please enter a valid amount greater than zero.");
+        return;
+    }
+
+    const transactionDate =
+        document.getElementById("transaction_date").value;
+
+    const dueDate =
+        document.getElementById("due_date").value;
+
+    if (dueDate && dueDate < transactionDate) {
+        alert("Due date cannot be earlier than transaction date.");
+        return;
+    }
+
     const data = {
 
         transaction_type:
             document.getElementById("transaction_type").value,
 
         person_name:
-            document.getElementById("person_name").value,
+            document.getElementById("person_name").value.trim(),
 
-        amount:
-            document.getElementById("amount").value,
+        amount: amount,
 
-        transaction_date:
-            document.getElementById("transaction_date").value,
+        transaction_date: transactionDate,
 
-        due_date:
-            document.getElementById("due_date").value || null,
+        due_date: dueDate || null,
 
         description:
-            document.getElementById("description").value
+            document.getElementById("description").value.trim()
     };
 
     if (id) {
         data.status = document.getElementById("status").value;
     }
 
+    const submitBtn = document.getElementById("submitBtn");
+
     try {
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = id ? "Updating..." : "Saving...";
 
         if (id) {
 
@@ -280,7 +389,7 @@ document.getElementById("borrowLendForm")
                 body: JSON.stringify(data)
             });
 
-            alert("Record updated successfully");
+            alert("Record updated successfully.");
 
         } else {
 
@@ -289,15 +398,27 @@ document.getElementById("borrowLendForm")
                 body: JSON.stringify(data)
             });
 
-            alert("Record added successfully");
+            alert("Record added successfully.");
         }
 
         resetForm();
-        loadRecords();
+        await loadRecords();
 
     } catch (error) {
+
         alert(error.message);
+
+    } finally {
+
+        submitBtn.disabled = false;
+
+        if (!document.getElementById("transaction_id").value) {
+            submitBtn.textContent = "Save Record";
+        } else {
+            submitBtn.textContent = "Update Record";
+        }
     }
+
 });
 
 
@@ -308,6 +429,10 @@ async function editRecord(id) {
 
         const result = await apiRequest(`${API_URL}/${id}`);
         const item = result.data;
+
+        if (!item) {
+            throw new Error("Record not found.");
+        }
 
         document.getElementById("transaction_id").value =
             item.transaction_id;
@@ -349,6 +474,7 @@ async function editRecord(id) {
             .scrollIntoView({ behavior: "smooth" });
 
     } catch (error) {
+
         alert(error.message);
     }
 }
@@ -367,11 +493,16 @@ async function deleteRecord(id) {
             method: "DELETE"
         });
 
-        alert("Record deleted successfully");
+        alert("Record deleted successfully.");
 
-        loadRecords();
+        await loadRecords();
+
+        if (document.getElementById("transaction_id").value == id) {
+            resetForm();
+        }
 
     } catch (error) {
+
         alert(error.message);
     }
 }
@@ -384,7 +515,8 @@ function resetForm() {
 
     document.getElementById("transaction_id").value = "";
 
-    document.getElementById("statusGroup").style.display = "none";
+    document.getElementById("statusGroup").style.display =
+        "none";
 
     document.getElementById("formTitle").textContent =
         "Add Borrow / Lend";

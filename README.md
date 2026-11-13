@@ -1,14 +1,16 @@
 # Daily Expense Tracker
 
-A web-based personal finance management application built using **Python Flask and PostgreSQL**. It helps users manage daily expenses, track income, maintain borrowing and lending records, monitor budgets, and generate financial reports.
+A web-based personal finance management application built using **Python Flask and PostgreSQL**. It helps users manage daily expenses, track income, maintain borrowing and lending records, monitor monthly budgets, and generate financial reports.
 
 ## Features
 
 ### 1. User Authentication
-- User registration
+- User registration with Terms & Conditions acceptance
 - User login
 - JWT-based authentication
+- Access token and refresh token support
 - Secure password hashing using Werkzeug
+- Change password functionality
 - User-specific financial records
 - Protected API endpoints
 
@@ -85,7 +87,14 @@ A web-based personal finance management application built using **Python Flask a
 | D | Above 100% to 120% |
 | E | Above 120% |
 
-> Note: Monthly budget information is currently stored in browser local storage.
+> **Note:** Monthly budget information is currently stored in browser local storage.
+
+### 8. Registration Terms & Conditions
+- Display Terms & Conditions during registration
+- Require user acceptance before registration
+- Record acceptance status
+- Store acceptance timestamp
+- Maintain a Terms & Conditions version
 
 ## Technology Stack
 
@@ -160,6 +169,9 @@ The application uses the following main tables.
 | password_hash | Hashed password |
 | full_name | User's full name |
 | is_active | Account status |
+| terms_accepted | Terms acceptance status |
+| terms_accepted_at | Acceptance timestamp |
+| terms_version | Accepted terms version |
 | created_date | Account creation timestamp |
 
 ### 2. Expenses
@@ -225,7 +237,7 @@ python -m venv expense_venv
 
 ### 4. Activate the virtual environment
 
-Windows PowerShell:
+**Windows PowerShell:**
 
 ```powershell
 .\expense_venv\Scripts\Activate.ps1
@@ -256,7 +268,7 @@ Replace the database credentials and JWT secret with your own values.
 python app.py
 ```
 
-Open the application:
+Open the application in your browser:
 
 ```text
 http://127.0.0.1:5000/
@@ -271,7 +283,9 @@ All protected financial APIs require a valid JWT access token.
 | Method | Endpoint | Description |
 |---|---|---|
 | POST | `/api/auth/register` | Register a new user |
-| POST | `/api/auth/login` | Authenticate user and generate JWT |
+| POST | `/api/auth/login` | Authenticate user and generate access and refresh tokens |
+| PUT | `/api/auth/change-password` | Change account password |
+| POST | `/api/auth/refresh` | Generate a new access token using a refresh token |
 
 ### Expense Management APIs
 
@@ -303,11 +317,15 @@ All protected financial APIs require a valid JWT access token.
 | PUT | `/api/borrow-lend/{transaction_id}` | Update a transaction |
 | DELETE | `/api/borrow-lend/{transaction_id}` | Delete a transaction |
 
-**Authorization Header:**
+### Authorization Header
+
+For protected API requests:
 
 ```text
 Authorization: Bearer YOUR_ACCESS_TOKEN
 ```
+
+For the refresh endpoint, send the refresh token using the authentication mechanism configured by the backend.
 
 ## Deployment on Render
 
@@ -339,6 +357,8 @@ Connect your GitHub repository to Render. New commits can trigger automatic depl
 - Multi-currency support
 - AI-powered spending insights
 - Improved mobile responsiveness
+- Persistent database-based budget management
+- Login history and account security monitoring
 
 ## Author
 

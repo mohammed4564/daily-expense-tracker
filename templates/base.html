@@ -1,76 +1,160 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}Daily Expense Tracker{% endblock %}</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Daily Expense Tracker{% endblock %}
+    </title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
-
-
-
-<script>
-function logout() {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    const token = localStorage.getItem("access_token");
-
-    document.getElementById("loginNav").style.display =
-        token ? "none" : "inline-block";
-
-    document.getElementById("registerNav").style.display =
-        token ? "none" : "inline-block";
-
-    document.getElementById("logoutBtn").style.display =
-        token ? "inline-block" : "none";
-});
-</script>
 
 <body>
 
-  
 <header class="navbar">
+
     <div class="logo">
         Daily Expense Tracker
     </div>
 
     <nav class="main-nav">
-        <a href="{{ url_for('home') }}">Home</a>
-        <a href="{{ url_for('dashboard_page') }}">Dashboard</a>
-        <a href="{{ url_for('add_expense_page') }}">Expenses</a>
-        <a href="{{ url_for('income_page') }}">Income</a>
-        <a href="{{ url_for('borrow_lend_page') }}">Borrow / Lend</a>
-        <a href="{{ url_for('reports_page') }}">Reports</a>
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('dashboard_page') }}"
+           class="auth-required">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('add_expense_page') }}"
+           class="auth-required">
+            Expenses
+        </a>
+
+        <a href="{{ url_for('income_page') }}"
+           class="auth-required">
+            Income
+        </a>
+
+        <a href="{{ url_for('borrow_lend_page') }}"
+           class="auth-required">
+            Borrow / Lend
+        </a>
+
+        <a href="{{ url_for('reports_page') }}"
+           class="auth-required">
+            Reports
+        </a>
+
     </nav>
 
+
     <div class="nav-auth">
-        <a href="{{ url_for('login_page') }}" id="loginNav">Login</a>
-        <a href="{{ url_for('register_page') }}" id="registerNav">Register</a>
-        <button type="button" id="logoutBtn"
-                onclick="logout()" style="display:none;">
+
+        <a href="{{ url_for('login_page') }}"
+           id="loginNav">
+            Login
+        </a>
+
+        <a href="{{ url_for('register_page') }}"
+           id="registerNav">
+            Register
+        </a>
+
+        <button type="button"
+                id="logoutBtn"
+                onclick="logout()"
+                style="display:none;">
             Logout
         </button>
+
     </div>
+
 </header>
 
 
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
+<main class="container">
 
-    <footer class="footer">
-        <p>Daily Expense Tracker &copy; 2026</p>
-    </footer>
+    {% block content %}{% endblock %}
 
-    {% block scripts %}{% endblock %}
+</main>
+
+
+<footer class="footer">
+
+    <p>Daily Expense Tracker &copy; 2026</p>
+
+</footer>
+
+
+<script>
+
+// ======================================
+// LOGOUT
+// ======================================
+
+function logout() {
+
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+
+    window.location.replace("/login");
+}
+
+
+// ======================================
+// NAVIGATION AUTHENTICATION
+// ======================================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    const token = localStorage.getItem("access_token");
+
+    const loginNav =
+        document.getElementById("loginNav");
+
+    const registerNav =
+        document.getElementById("registerNav");
+
+    const logoutBtn =
+        document.getElementById("logoutBtn");
+
+    // Login and Register links
+    loginNav.style.display =
+        token ? "none" : "inline-block";
+
+    registerNav.style.display =
+        token ? "none" : "inline-block";
+
+    // Logout button
+    logoutBtn.style.display =
+        token ? "inline-block" : "none";
+
+    // Protected navigation links
+    document.querySelectorAll(".auth-required").forEach(link => {
+
+        link.style.display =
+            token ? "inline-block" : "none";
+
+    });
+
+});
+
+</script>
+
+
+{% block scripts %}{% endblock %}
 
 </body>
 </html>

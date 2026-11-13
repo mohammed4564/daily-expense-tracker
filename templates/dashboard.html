@@ -6,61 +6,66 @@
 
 <div class="dashboard">
 
-    <!-- Dashboard Header -->
     <div class="dashboard-header">
         <div>
             <h2>Expense Dashboard</h2>
             <p>Track and manage your daily expenses.</p>
         </div>
 
-      <div class="dashboard-actions">
-    <a href="/add-expense" class="btn-primary add-btn">
-        + Add Expense
-    </a>
+        <div class="dashboard-actions">
+            <a href="/add-expense" class="btn-primary add-btn">
+                + Add Expense
+            </a>
 
-    <a href="/income" class="btn-primary income-btn">
-        + Add Income
-    </a>
+            <a href="/income" class="btn-primary income-btn">
+                + Add Income
+            </a>
 
-    <a href="/borrow-lend" class="btn-primary borrow-btn">
-        + Borrow / Lend
-    </a>
+            <a href="/borrow-lend" class="btn-primary borrow-btn">
+                + Borrow / Lend
+            </a>
 
-    <a href="/reports" class="btn-primary">
-        View Reports
-    </a>
-</div>
-
+            <a href="/reports" class="btn-primary">
+                View Reports
+            </a>
+        </div>
     </div>
 
 
     <!-- Date Filter -->
     <div class="date-filter">
+
         <div class="form-group">
             <label for="fromDate">From Date</label>
-            <input type="date" id="fromDate" name="fromDate">
+            <input type="date" id="fromDate">
         </div>
 
         <div class="form-group">
             <label for="toDate">To Date</label>
-            <input type="date" id="toDate" name="toDate">
+            <input type="date" id="toDate">
         </div>
 
         <div class="filter-buttons">
-            <button type="button" class="btn-primary" onclick="applyDateFilter()">
+            <button type="button" class="btn-primary"
+                    onclick="applyDateFilter()">
                 Apply Filter
             </button>
-            <button type="button" class="btn-primary" onclick="clearDateFilter()">
+
+            <button type="button" class="btn-primary"
+                    onclick="clearDateFilter()">
                 Clear
             </button>
         </div>
+
     </div>
 
-    <p id="filterMessage" class="message" role="status" aria-live="polite"></p>
+    <p id="filterMessage" class="message"
+       role="status" aria-live="polite"></p>
 
 
     <!-- Summary Cards -->
     <div class="summary-cards">
+
         <div class="summary-card">
             <h3>Total Expenses</h3>
             <p id="totalExpenses">₹0.00</p>
@@ -75,6 +80,7 @@
             <h3>Number of Expenses</h3>
             <p id="expenseCount">0</p>
         </div>
+
     </div>
 
 
@@ -83,10 +89,12 @@
 
         <h3>Expense Records</h3>
 
-        <p id="message" class="message" role="status" aria-live="polite"></p>
+        <p id="message" class="message"
+           role="status" aria-live="polite"></p>
 
         <div class="table-responsive">
             <table aria-label="Expense records">
+
                 <thead>
                     <tr>
                         <th scope="col">Date</th>
@@ -102,6 +110,7 @@
                         <td colspan="5">Loading expenses...</td>
                     </tr>
                 </tbody>
+
             </table>
         </div>
 
@@ -113,104 +122,138 @@
 
 
 {% block scripts %}
-
 <script>
+
 // ======================================
 // AUTHENTICATION
 // ======================================
-const token = localStorage.getItem("access_token");
+
+let token = localStorage.getItem("access_token");
 
 if (!token) {
-    window.location.href = "/login";
+    window.location.replace("/login");
 }
 
 
 // ======================================
 // GLOBAL STATE
 // ======================================
+
 let expenses = [];
 let filteredExpenses = [];
-let deletingIds = new Set();   // prevents double-delete
+let deletingIds = new Set();
 
 
 // ======================================
 // HELPERS
 // ======================================
-function formatAmount(amount) {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) return "₹0.00";
 
-    return n.toLocaleString("en-IN", {
+function formatAmount(amount) {
+
+    const number = Number(amount);
+
+    if (!Number.isFinite(number)) {
+        return "₹0.00";
+    }
+
+    return number.toLocaleString("en-IN", {
         style: "currency",
         currency: "INR"
     });
 }
 
+
 function safeDate(value) {
+
     if (!value) return "";
-    const s = String(value).slice(0, 10);
-    return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : "";
+
+    const date = String(value).slice(0, 10);
+
+    return /^\d{4}-\d{2}-\d{2}$/.test(date)
+        ? date
+        : "";
 }
 
-function showMessage(message, isError = false) {
-    const el = document.getElementById("message");
-    if (!el) return;
-    el.textContent = message;
-    el.className = isError ? "message error" : "message success";
+
+function showMessage(text, isError = false) {
+
+    const element = document.getElementById("message");
+
+    if (!element) return;
+
+    element.textContent = text;
+    element.className = isError
+        ? "message error"
+        : "message success";
 }
 
-function showFilterMessage(message, isError = false) {
-    const el = document.getElementById("filterMessage");
-    if (!el) return;
-    el.textContent = message;
-    el.className = isError ? "message error" : "message success";
+
+function showFilterMessage(text, isError = false) {
+
+    const element = document.getElementById("filterMessage");
+
+    if (!element) return;
+
+    element.textContent = text;
+    element.className = isError
+        ? "message error"
+        : "message success";
+}
+
+
+function handleUnauthorized() {
+
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+
+    window.location.replace("/login");
 }
 
 
 // ======================================
 // LOAD EXPENSES
 // ======================================
+
 async function loadExpenses() {
+
     const tableBody = document.getElementById("expenseTableBody");
+
     if (!tableBody) return;
 
     if (!token) {
-        window.location.href = "/login";
+        handleUnauthorized();
         return;
     }
 
     try {
-        tableBody.innerHTML = `<tr><td colspan="5">Loading expenses...</td></tr>`;
+
+        tableBody.innerHTML =
+            '<tr><td colspan="5">Loading expenses...</td></tr>';
 
         const response = await fetch("/api/expenses", {
             method: "GET",
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         });
 
         if (response.status === 401) {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("user");
-            window.location.href = "/login";
+            handleUnauthorized();
             return;
         }
 
-        let data = null;
-        try {
-            data = await response.json();
-        } catch {
-            data = null;
-        }
+        const data = await response.json();
 
         if (!response.ok) {
             throw new Error(
-                (data && data.message) ||
-                `Unable to load expenses (HTTP ${response.status}).`
+                data.message || "Unable to load expenses."
             );
         }
 
         const list = Array.isArray(data)
             ? data
-            : (data && (data.expenses || data.data)) || [];
+            : data.expenses || data.data || [];
 
         if (!Array.isArray(list)) {
             throw new Error("Unexpected API response format.");
@@ -218,12 +261,15 @@ async function loadExpenses() {
 
         expenses = list;
 
-        // Initialize filter (safe even if inputs are absent)
         applyDateFilter();
 
     } catch (error) {
-        tableBody.innerHTML = `<tr><td colspan="5">Unable to load expenses.</td></tr>`;
+
+        tableBody.innerHTML =
+            '<tr><td colspan="5">Unable to load expenses.</td></tr>';
+
         showMessage(error.message, true);
+
         console.error("Load expenses error:", error);
     }
 }
@@ -232,27 +278,42 @@ async function loadExpenses() {
 // ======================================
 // DATE FILTER
 // ======================================
-function applyDateFilter() {
-    const fromEl = document.getElementById("fromDate");
-    const toEl   = document.getElementById("toDate");
 
-    const fromDate = fromEl ? fromEl.value : "";
-    const toDate   = toEl   ? toEl.value   : "";
+function applyDateFilter() {
+
+    const fromDate =
+        document.getElementById("fromDate").value;
+
+    const toDate =
+        document.getElementById("toDate").value;
 
     if (fromDate && toDate && fromDate > toDate) {
-        showFilterMessage("From Date cannot be after To Date.", true);
+
+        showFilterMessage(
+            "From Date cannot be after To Date.",
+            true
+        );
+
         return;
     }
 
     filteredExpenses = expenses.filter(expense => {
-        const d = safeDate(expense.expense_date);
-        const afterStart = !fromDate || d >= fromDate;
-        const beforeEnd  = !toDate   || d <= toDate;
-        return afterStart && beforeEnd;
+
+        const date = safeDate(expense.expense_date);
+
+        const afterStart =
+            !fromDate || date >= fromDate;
+
+        const beforeEnd =
+            !toDate || date <= toDate;
+
+        return date && afterStart && beforeEnd;
     });
 
     if (fromDate || toDate) {
-        showFilterMessage(`Showing ${filteredExpenses.length} expense record(s).`);
+        showFilterMessage(
+            `Showing ${filteredExpenses.length} expense record(s).`
+        );
     } else {
         showFilterMessage("");
     }
@@ -261,11 +322,12 @@ function applyDateFilter() {
     displayExpenses();
 }
 
+
 function clearDateFilter() {
-    const fromEl = document.getElementById("fromDate");
-    const toEl   = document.getElementById("toDate");
-    if (fromEl) fromEl.value = "";
-    if (toEl)   toEl.value   = "";
+
+    document.getElementById("fromDate").value = "";
+    document.getElementById("toDate").value = "";
+
     applyDateFilter();
 }
 
@@ -273,89 +335,133 @@ function clearDateFilter() {
 // ======================================
 // SUMMARY
 // ======================================
+
 function updateSummary() {
+
     const total = expenses.reduce(
-        (sum, e) => sum + (Number(e.amount) || 0), 0
+        (sum, expense) =>
+            sum + (Number(expense.amount) || 0),
+        0
     );
 
     const selectedTotal = filteredExpenses.reduce(
-        (sum, e) => sum + (Number(e.amount) || 0), 0
+        (sum, expense) =>
+            sum + (Number(expense.amount) || 0),
+        0
     );
 
-    const totalEl = document.getElementById("totalExpenses");
-    const monthEl = document.getElementById("monthlyExpenses");
-    const countEl = document.getElementById("expenseCount");
+    document.getElementById("totalExpenses").textContent =
+        formatAmount(total);
 
-    if (totalEl) totalEl.textContent = formatAmount(total);
-    if (monthEl) monthEl.textContent = formatAmount(selectedTotal);
-    if (countEl) countEl.textContent = String(filteredExpenses.length);
+    document.getElementById("monthlyExpenses").textContent =
+        formatAmount(selectedTotal);
+
+    document.getElementById("expenseCount").textContent =
+        String(filteredExpenses.length);
 }
 
 
 // ======================================
-// RENDER TABLE
+// RENDER EXPENSE TABLE
 // ======================================
+
 function displayExpenses() {
-    const tableBody = document.getElementById("expenseTableBody");
-    if (!tableBody) return;
+
+    const tableBody =
+        document.getElementById("expenseTableBody");
 
     tableBody.innerHTML = "";
 
     if (filteredExpenses.length === 0) {
+
         tableBody.innerHTML = `
-            <tr><td colspan="5">No expenses found for selected dates.</td></tr>
+            <tr>
+                <td colspan="5">
+                    No expenses found for selected dates.
+                </td>
+            </tr>
         `;
+
         return;
     }
 
     filteredExpenses.forEach(expense => {
+
         const row = document.createElement("tr");
 
         const dateCell = document.createElement("td");
-        dateCell.textContent = safeDate(expense.expense_date) || "-";
+        dateCell.textContent =
+            safeDate(expense.expense_date) || "-";
 
         const categoryCell = document.createElement("td");
-        categoryCell.textContent = expense.category || "-";
+        categoryCell.textContent =
+            expense.category || "-";
 
         const descriptionCell = document.createElement("td");
-        descriptionCell.textContent = expense.description || "-";
+        descriptionCell.textContent =
+            expense.description || "-";
 
         const amountCell = document.createElement("td");
-        amountCell.textContent = formatAmount(expense.amount);
+        amountCell.textContent =
+            formatAmount(expense.amount);
 
-        row.append(dateCell, categoryCell, descriptionCell, amountCell);
-
-        // Action buttons
         const actionCell = document.createElement("td");
 
-        const editButton = document.createElement("button");
+        const expenseId =
+            expense.expense_id ?? expense.id;
+
+        const editButton =
+            document.createElement("button");
+
         editButton.type = "button";
         editButton.textContent = "Edit";
         editButton.className = "btn-edit";
-        editButton.addEventListener("click", () => {
-            const id = expense.expense_id ?? expense.id;
-            if (id == null) {
-                showMessage("This expense cannot be edited (missing ID).", true);
+
+        editButton.addEventListener("click", function() {
+
+            if (expenseId == null) {
+                showMessage(
+                    "Cannot edit this expense: missing ID.",
+                    true
+                );
                 return;
             }
-            window.location.href = `/edit-expense/${id}`;
+
+            window.location.href =
+                `/edit-expense/${encodeURIComponent(expenseId)}`;
         });
 
-        const deleteButton = document.createElement("button");
+
+        const deleteButton =
+            document.createElement("button");
+
         deleteButton.type = "button";
         deleteButton.textContent = "Delete";
         deleteButton.className = "btn-delete";
-        deleteButton.addEventListener("click", () => {
-            const id = expense.expense_id ?? expense.id;
-            if (id == null) {
-                showMessage("This expense cannot be deleted (missing ID).", true);
+
+        deleteButton.addEventListener("click", function() {
+
+            if (expenseId == null) {
+                showMessage(
+                    "Cannot delete this expense: missing ID.",
+                    true
+                );
                 return;
             }
-            deleteExpense(id, deleteButton);
+
+            deleteExpense(expenseId, deleteButton);
         });
 
+
         actionCell.append(editButton, deleteButton);
-        row.appendChild(actionCell);
+
+        row.append(
+            dateCell,
+            categoryCell,
+            descriptionCell,
+            amountCell,
+            actionCell
+        );
 
         tableBody.appendChild(row);
     });
@@ -365,73 +471,88 @@ function displayExpenses() {
 // ======================================
 // DELETE EXPENSE
 // ======================================
-async function deleteExpense(expenseId, buttonEl) {
-    if (deletingIds.has(expenseId)) return;
+
+async function deleteExpense(expenseId, buttonElement) {
+
+    const idKey = String(expenseId);
+
+    if (deletingIds.has(idKey)) return;
 
     if (!confirm("Are you sure you want to delete this expense?")) {
         return;
     }
 
-    deletingIds.add(expenseId);
-    if (buttonEl) {
-        buttonEl.disabled = true;
-        buttonEl.textContent = "Deleting…";
-    }
+    deletingIds.add(idKey);
+
+    buttonElement.disabled = true;
+    buttonElement.textContent = "Deleting...";
 
     try {
+
         const response = await fetch(
             `/api/expenses/${encodeURIComponent(expenseId)}`,
             {
                 method: "DELETE",
-                headers: { "Authorization": `Bearer ${token}` }
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             }
         );
 
         if (response.status === 401) {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("user");
-            window.location.href = "/login";
+            handleUnauthorized();
             return;
         }
 
-        let data = null;
-        try { data = await response.json(); } catch { data = null; }
+        const data = await response.json();
 
         if (!response.ok) {
             throw new Error(
-                (data && data.message) ||
-                `Unable to delete expense (HTTP ${response.status}).`
+                data.message || "Unable to delete expense."
             );
         }
 
         showMessage("Expense deleted successfully.");
 
-        expenses = expenses.filter(e =>
-            (e.expense_id ?? e.id) !== expenseId
-        );
+        // Convert IDs to strings to avoid number/string mismatch.
+        expenses = expenses.filter(expense => {
+            const currentId =
+                expense.expense_id ?? expense.id;
+
+            return String(currentId) !== idKey;
+        });
 
         applyDateFilter();
 
     } catch (error) {
+
         showMessage(error.message, true);
+
         console.error("Delete expense error:", error);
 
-        if (buttonEl && buttonEl.isConnected) {
-            buttonEl.disabled = false;
-            buttonEl.textContent = "Delete";
+        if (buttonElement.isConnected) {
+            buttonElement.disabled = false;
+            buttonElement.textContent = "Delete";
         }
+
     } finally {
-        deletingIds.delete(expenseId);
+
+        deletingIds.delete(idKey);
     }
 }
 
 
 // ======================================
-// INIT
+// INITIALIZATION
 // ======================================
-document.addEventListener("DOMContentLoaded", () => {
-    if (token) loadExpenses();
-});
-</script>
 
+document.addEventListener("DOMContentLoaded", function() {
+
+    if (token) {
+        loadExpenses();
+    }
+
+});
+
+</script>
 {% endblock %}
